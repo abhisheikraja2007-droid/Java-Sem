@@ -39,6 +39,16 @@ public class GrievanceService {
 
     // --- RULE 1: Create Grievance linked to citizen ---
     public Grievance createGrievance(Long categoryId, String description, String location, String citizenUsername) {
+        if (description == null || description.trim().isEmpty()) {
+            throw new IllegalArgumentException("Description cannot be empty");
+        }
+        if (description.length() > 1000) {
+            description = description.substring(0, 1000);
+        }
+        if (location == null || location.trim().isEmpty()) {
+            throw new IllegalArgumentException("Location cannot be empty");
+        }
+
         Category category = categoryRepo.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category with ID " + categoryId + " not found"));
 
@@ -46,8 +56,8 @@ public class GrievanceService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + citizenUsername));
 
         Grievance newGrievance = new Grievance();
-        newGrievance.setDescription(description);
-        newGrievance.setLocation(location);
+        newGrievance.setDescription(description.trim());
+        newGrievance.setLocation(location.trim());
         newGrievance.setStatus(GrievanceStatus.OPEN);
         newGrievance.setCategory(category);
         newGrievance.setCitizen(citizen);
@@ -63,21 +73,42 @@ public class GrievanceService {
         );
         LocalDateTime now = LocalDateTime.now();
         for (Grievance grievance : activeGrievances) {
-            long daysOpen = ChronoUnit.DAYS.between(grievance.getCreatedAt(), now);
-            int slaLimit = grievance.getCategory().getSlaDays();
+            // Edge Case 1: Null check on createdAt or category to prevent NullPointerException
+            if (grievance.getCreatedAt() == null || grievance.getCategory() == null) {
+                log.warn("Skipping grievance ID {} due to null createdAt or category", grievance.getId());
+                continue;
+            }
 
-            if (daysOpen > slaLimit) {
+            // Edge Case 2: Guard against invalid or zero/negative SLA limit
+            int slaLimit = Math.max(1, grievance.getCategory().getSlaDays());
+            LocalDateTime deadline = grievance.getCreatedAt().plusDays(slaLimit);
+
+            // Edge Case 3: Precise boundary check (now.isAfter(deadline))
+            // Prevents ChronoUnit.DAYS truncation where 1-day SLA required 48+ hours to trigger
+            if (now.isAfter(deadline)) {
+                // Edge Case 4: Prevent duplicate escalation record for Senior Officer
+                boolean alreadyEscalated = escalationRepo.findByGrievanceId(grievance.getId()).stream()
+                        .anyMatch(e -> "Senior Officer".equalsIgnoreCase(e.getEscalatedTo()));
+
                 grievance.setStatus(GrievanceStatus.ESCALATED);
                 grievanceRepo.save(grievance);
 
-                Escalation escalation = new Escalation();
-                escalation.setGrievance(grievance);
-                escalation.setReason("SLA Breached by " + (daysOpen - slaLimit) + " days. Auto-escalated to Senior Officer.");
-                escalation.setEscalatedTo("Senior Officer");
-                escalationRepo.save(escalation);
+                if (!alreadyEscalated) {
+                    long daysOverdue = ChronoUnit.DAYS.between(deadline, now);
+                    long hoursOverdue = ChronoUnit.HOURS.between(deadline, now);
+                    String overdueDesc = daysOverdue > 0 
+                            ? (daysOverdue + " day" + (daysOverdue > 1 ? "s" : ""))
+                            : (Math.max(1, hoursOverdue) + " hour" + (hoursOverdue > 1 ? "s" : ""));
 
-                log.warn("Escalated Grievance ID: {}", grievance.getId());
-                eventPublisher.publishEvent(new GrievanceEscalatedEvent(this, grievance));
+                    Escalation escalation = new Escalation();
+                    escalation.setGrievance(grievance);
+                    escalation.setReason("SLA Breached by " + overdueDesc + ". Auto-escalated to Senior Officer.");
+                    escalation.setEscalatedTo("Senior Officer");
+                    escalationRepo.save(escalation);
+
+                    log.warn("Escalated Grievance ID: {} (overdue by {})", grievance.getId(), overdueDesc);
+                    eventPublisher.publishEvent(new GrievanceEscalatedEvent(this, grievance));
+                }
             }
         }
     }

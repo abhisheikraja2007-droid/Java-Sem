@@ -57,13 +57,19 @@ public class GrievanceController {
     }
 
     // 5. Get ALL grievances (paginated) — used by senior officer dashboard
+    // Allowed fields for sorting to prevent PropertyReferenceException
+    private static final java.util.Set<String> ALLOWED_SORTS = java.util.Set.of("id", "createdAt", "status", "rating", "description", "location");
+
     // GET /api/grievances
     @GetMapping
     public Page<Grievance> getAllGrievances(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        int safePage = Math.max(0, page);
+        int safeSize = Math.min(Math.max(1, size), 100);
+        String safeSort = ALLOWED_SORTS.contains(sortBy) ? sortBy : "createdAt";
+        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(safeSort).descending());
         return grievanceService.getAllGrievances(pageable);
     }
 
@@ -74,7 +80,9 @@ public class GrievanceController {
             @RequestParam String username,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        int safePage = Math.max(0, page);
+        int safeSize = Math.min(Math.max(1, size), 100);
+        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by("createdAt").descending());
         return ResponseEntity.ok(grievanceService.getMyGrievances(username, pageable));
     }
 
@@ -84,7 +92,9 @@ public class GrievanceController {
     public ResponseEntity<Page<Grievance>> getEscalated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        int safePage = Math.max(0, page);
+        int safeSize = Math.min(Math.max(1, size), 100);
+        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by("createdAt").descending());
         return ResponseEntity.ok(grievanceService.getEscalatedGrievances(pageable));
     }
 

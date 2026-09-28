@@ -1,8 +1,8 @@
-# Public Grievance Management System
+Public Grievance Management System
 
 A robust, backend API built with Spring Boot designed to handle the submission, tracking, and resolution of public grievances and complaints. This system features an automated Service Level Agreement (SLA) engine that escalates overdue grievances, role-based access control, and a comprehensive RESTful API.
 
-## Features
+Features
 
 - **Grievance Submission:** Citizens can seamlessly submit new grievances categorized by specific domains (e.g., Infrastructure, Sanitation).
 - **Status Tracking & Updates:** Department officials can update the status of grievances (Open, In Progress, Resolved).
@@ -49,30 +49,6 @@ mvn spring-boot:run
 - Import the project as a Maven project.
 - Run `JavaProjectApplication.java` from your IDE.
 
-## Web Portal & Default Credentials
-
-Open `http://localhost:8080/` in your browser:
-
-| Role | Username | Password | Access |
-|------|----------|----------|--------|
-| **Citizen** | `citizen` | `citizen123` | File complaints, track "My Complaints", rate resolved issues |
-| **Senior Officer** | `senior` | `senior123` | View escalated queue, inspect SLA overdues, review all complaints |
-
-## Testing SLA Escalation
-
-1. Backdate complaints in MySQL:
-   ```sql
-   UPDATE grievance SET created_at = NOW() - INTERVAL 10 DAY WHERE id IN (11, 12, 13, 14, 15);
-   ```
-2. Trigger the SLA engine:
-   ```powershell
-   Invoke-RestMethod -Uri "http://localhost:8080/api/grievances/test/trigger-sla" -Method POST
-   ```
-3. Check the Senior Officer dashboard at `http://localhost:8080` or via API:
-   ```powershell
-   Invoke-RestMethod -Uri "http://localhost:8080/api/grievances/escalated" -Method GET
-   ```
-
 ## API Endpoints
 
 The API base path is `http://localhost:8080/api/grievances`.
@@ -84,8 +60,6 @@ The API base path is `http://localhost:8080/api/grievances`.
 | `POST` | `/{id}/rate` | Submit a rating for a resolved grievance |
 | `GET` | `/department/{id}` | Fetch paginated grievances for a specific department |
 | `GET` | `/` | Fetch all grievances (supports pagination: `?page=0&size=10`) |
-| `GET` | `/my?username={user}` | Fetch citizen's complaints |
-| `GET` | `/escalated` | Fetch all escalated complaints for senior officer |
 | `POST` | `/test/trigger-sla` | Manually trigger the SLA escalation engine (for testing) |
 
 *Note: Swagger documentation is available by navigating to `http://localhost:8080/swagger-ui.html` while the app is running.*
