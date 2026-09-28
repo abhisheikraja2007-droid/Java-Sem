@@ -15,13 +15,16 @@ public class Escalation {
 
     private String reason;
 
+    // Requirement: "record which officer it was escalated to"
+    private String escalatedTo; // e.g. "Senior Officer", "District Collector"
+
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDateTime escalatedAt;
+    private LocalDateTime escalatedAt; // Requirement: "and when"
 
     @ManyToOne
     @JoinColumn(name = "grievance_id")
     @com.fasterxml.jackson.annotation.JsonIgnore
     private Grievance grievance;
 
-}
+}

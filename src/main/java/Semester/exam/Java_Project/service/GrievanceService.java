@@ -65,6 +65,7 @@ public class GrievanceService {
                 Escalation escalation = new Escalation();
                 escalation.setGrievance(grievance);
                 escalation.setReason("SLA Breached by " + (daysOpen - slaLimit) + " days. Auto-escalated to Senior Officer.");
+                escalation.setEscalatedTo("Senior Officer"); // Required: record which officer
                 escalationRepo.save(escalation);
 
                 System.out.println("Escalated Grievance ID: " + grievance.getId());
