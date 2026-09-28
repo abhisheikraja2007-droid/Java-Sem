@@ -28,11 +28,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // --- Wipe all old test data on startup (fresh slate) ---
-        escalationRepository.deleteAll();
-        grievanceRepository.deleteAll();
-
-        // --- Seed Users (if not exist) ---
+        // Seed Users (if not exist)
         if (!userRepository.existsByUsername("citizen")) {
             User citizen = new User();
             citizen.setUsername("citizen");
