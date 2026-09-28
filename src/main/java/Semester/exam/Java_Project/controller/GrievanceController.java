@@ -30,7 +30,8 @@ public class GrievanceController {
     public ResponseEntity<Grievance> submitGrievance(@Valid @RequestBody GrievanceRequestDTO request) {
         Grievance createdGrievance = grievanceService.createGrievance(
                 request.getCategoryId(),
-                request.getDescription()
+                request.getDescription(),
+                request.getLocation()
         );
         return ResponseEntity.ok(createdGrievance);
     }

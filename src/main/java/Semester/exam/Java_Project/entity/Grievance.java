@@ -14,7 +14,11 @@ public class Grievance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer rating;
+
+    @Column(length = 1000)
     private String description;
+    
+    private String location;
 
     @Enumerated(EnumType.STRING) 
     private GrievanceStatus status;

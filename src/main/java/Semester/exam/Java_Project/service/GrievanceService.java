@@ -35,12 +35,13 @@ public class GrievanceService {
         this.eventPublisher = eventPublisher;
     }
 
-    public Grievance createGrievance(Long categoryId, String description) {
+    public Grievance createGrievance(Long categoryId, String description, String location) {
         Category category = categoryRepo.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category with ID " + categoryId + " not found"));
 
         Grievance newGrievance = new Grievance();
         newGrievance.setDescription(description);
+        newGrievance.setLocation(location);
         newGrievance.setStatus(GrievanceStatus.OPEN);
         newGrievance.setCategory(category);
 

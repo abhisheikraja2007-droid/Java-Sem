@@ -1,55 +1,555 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grievance Management System</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="background-elements">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-    </div>
 
-    <div class="container">
-        <header>
-            <h1>Public Grievances</h1>
-            <p>Submit and track civic issues in your area.</p>
-        </header>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>GrievanceTrack Portal</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}
+::-webkit-scrollbar{display:none;}
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"inverse-primary":"#b8c4ff","on-primary-container":"#a8b8ff","surface-dim":"#cbdbf5","surface-variant":"#d3e4fe","tertiary-fixed":"#85f8c4","on-primary-fixed-variant":"#173bab","secondary":"#904d00","on-tertiary-container":"#5bcf9e","primary":"#00288e","surface-tint":"#3755c3","on-secondary-fixed-variant":"#6e3900","on-tertiary":"#ffffff","primary-fixed-dim":"#b8c4ff","surface":"#f8f9ff","surface-container-lowest":"#ffffff","tertiary-fixed-dim":"#68dba9","secondary-fixed-dim":"#ffb77d","on-primary":"#ffffff","surface-container-low":"#eff4ff","secondary-fixed":"#ffdcc3","outline":"#757684","inverse-surface":"#213145","surface-container-high":"#dce9ff","surface-container-highest":"#d3e4fe","on-background":"#0b1c30","tertiary":"#003d28","error-container":"#ffdad6","on-error":"#ffffff","on-surface":"#0b1c30","outline-variant":"#c4c5d5","on-secondary":"#ffffff","secondary-container":"#fe932c","background":"#f8f9ff","on-secondary-container":"#663500","inverse-on-surface":"#eaf1ff","on-surface-variant":"#444653","error":"#ba1a1a","primary-fixed":"#dde1ff","surface-bright":"#f8f9ff","on-primary-fixed":"#001453","on-tertiary-fixed-variant":"#005137","on-error-container":"#93000a","on-tertiary-fixed":"#002114","surface-container":"#e5eeff","tertiary-container":"#00563a","primary-container":"#1e40af","on-secondary-fixed":"#2f1500"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"margin":"1rem","space-sm":"0.5rem","space-xs":"0.25rem","gutter":"1rem","space-md":"1rem","space-lg":"1.5rem","space-xl":"2rem"},fontFamily:{"body-sm":["Public Sans"],"label-md":["Public Sans"],"headline-xl":["Public Sans"],"headline-xl-mobile":["Public Sans"],"headline-lg":["Public Sans"],"body-lg":["Public Sans"],"headline-sm":["Public Sans"],"headline-md":["Public Sans"],"body-md":["Public Sans"],"label-lg":["Public Sans"],"label-sm":["Public Sans"],"headline-lg-mobile":["Public Sans"]},fontSize:{"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}],"headline-xl":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-xl-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-lg":["30px",{lineHeight:"38px",letterSpacing:"-0.015em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"24px",fontWeight:"600"}],"headline-md":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"700"}],"headline-lg-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"700"}]}}}}</script></head><body class="bg-surface text-on-surface font-body-md"><header class="fixed top-0 left-0 right-0 z-50">
+<div class="bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-outline-variant/30">
+<div class="h-20 max-w-7xl mx-auto px-gutter flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<img alt="Brand logo. - Primary color: #1e40af
+- Font: publicSans
+- Mode: light
+- Roundness: rounded-md
+" class="h-8 w-auto object-contain" src="https://placehold.co/200x60?text=GrievanceTrack+Logo" />
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-primary tracking-tight">GrievanceTrack Portal</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Metropolitan Municipal Governance & Resolution</span>
+</div>
+</div>
+<div class="hidden xl:flex items-center bg-surface-container-low rounded-lg px-space-md py-space-xs w-64">
+<span class="material-symbols-outlined text-outline text-lg mr-space-xs">search</span>
+<input class="bg-transparent font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none w-full" placeholder="Search Ticket # (e.g. GRV-9021)" type="text"/>
+</div>
+<nav class="hidden lg:flex items-center gap-space-xs p-space-xs bg-surface-container-low/60 rounded-xl" data-active-classes="bg-primary-container text-on-primary font-label-lg rounded-lg">
+<a aria-current="page" class="px-space-md py-space-xs transition-all bg-primary-container text-on-primary font-label-lg rounded-lg" data-path="file-new-grievance" href="#">File New Grievance</a>
+</nav>
+<div class="flex items-center gap-space-md"><a class="relative p-space-xs rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" data-path="public-sla-escalation-board" href="#" title="SLA Alerts"><span class="material-symbols-outlined text-2xl">notifications_active</span><span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface-container-lowest animate-pulse"></span></a><div class="flex items-center gap-space-sm pl-space-sm border-l border-outline-variant/40"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://ui-avatars.com/api/?name=Elena+Rostova&background=0D8ABC&color=fff"/><div class="hidden md:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Elena Rostova</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Ward 4 Citizen</span></div></div></div></div></div></header><main class="w-full pt-28 bg-surface"><div class="flex flex-col w-full">
+<div class="max-w-7xl mx-auto w-full px-gutter py-space-lg">
+<!-- Header Section with Breadcrumb & Civic Metadata -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl">
+<div>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant mb-space-xs">
+<span>PORTAL CENTRAL</span>
+<span>/</span>
+<span>INTAKE WORKFLOW</span>
+<span>/</span>
+<span class="text-primary font-semibold">CIVIC FORM 402-A</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">File an Official Citizen Grievance</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-space-xs max-w-3xl">
+          Registered directly into the municipal SLA tracking database with automated time-bound escalation under Municipal Statute § 14-B.
+        </p>
+</div>
+<div class="hidden lg:flex items-center gap-space-sm bg-surface-container px-space-md py-space-sm rounded-xl">
+<div class="w-3 h-3 rounded-full bg-secondary-container animate-ping"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">SLA ENGINE STATUS</span>
+<span class="font-label-md text-label-md text-on-surface">Active · Latency 14ms</span>
+</div>
+</div>
+</div>
+<!-- 3-Step Interactive Visual Progress Indicator -->
+<div class="bg-surface-container-low rounded-xl p-space-lg mb-space-xl shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md relative">
+<!-- Step 1 -->
+<div class="flex items-center gap-space-md bg-surface-container-lowest p-space-md rounded-lg shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-headline-sm text-headline-sm flex-shrink-0">
+            1
+          </div>
+<div class="min-w-0">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider block">Stage 01 • Active</span>
+<span class="font-label-lg text-label-lg text-on-surface truncate block">Issue Classification & Routing</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-center gap-space-md bg-surface-container-high/40 p-space-md rounded-lg opacity-80">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-headline-sm text-headline-sm flex-shrink-0">
+            2
+          </div>
+<div class="min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Stage 02 • Queued</span>
+<span class="font-label-lg text-label-lg text-on-surface truncate block">Location & Evidence Log</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-center gap-space-md bg-surface-container-high/40 p-space-md rounded-lg opacity-80">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-headline-sm text-headline-sm flex-shrink-0">
+            3
+          </div>
+<div class="min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Stage 03 • Queued</span>
+<span class="font-label-lg text-label-lg text-on-surface truncate block">Legal Attestation & Binding Submission</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Two-Column Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<!-- Left Main Column: Form Inputs (8 Cols) -->
+<div class="lg:col-span-8 space-y-space-xl">
+<!-- SECTION 1: Department & Category Selector -->
+<div class="bg-surface-container-lowest p-space-xl rounded-xl shadow-sm space-y-space-lg">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<svg class="w-6 h-6 text-primary flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">1. Municipal Department & Issue Category</h2>
+</div>
+<span class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed px-space-sm py-space-xs rounded-full">Mandatory</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant -mt-space-sm">
+            Selecting the accurate category directly engages the jurisdiction's pre-assigned response fleet and statutory clock.
+          </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md" id="department-grid">
+<!-- Card 1: Roads & Infrastructure (Selected) -->
+<div class="dept-card group p-space-md rounded-xl bg-surface-container-low transition-all cursor-pointer shadow-sm relative overflow-hidden ring-2 ring-primary" role="button" tabindex="0">
+<div class="absolute top-0 right-0 bg-primary text-on-primary font-label-sm text-label-sm px-space-sm py-1 rounded-bl-lg flex items-center gap-1">
+<svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Selected
+              </div>
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-lg bg-primary-container text-on-primary flex items-center justify-center flex-shrink-0 overflow-hidden">
+<svg class="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M18.1 4H5.9c-.8 0-1.4.7-1.3 1.5l1.6 14c.1.7.7 1.2 1.4 1.2h8.8c.7 0 1.3-.5 1.4-1.2l1.6-14c.1-.8-.5-1.5-1.3-1.5zM11 6h2v3h-2V6zm0 5h2v3h-2v-3zm0 5h2v3h-2v-3z"/></svg>
+</div>
+<div class="flex-1 pr-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Roads & Infrastructure</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Auto-routes to Public Works Dept (Ward 4 Div)</p>
+<div class="mt-space-sm flex items-center gap-space-xs">
+<span class="bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-semibold">3 Days Max SLA</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">• Code 101</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Water Supply & Sewage -->
+<div class="dept-card group p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer shadow-sm" role="button" tabindex="0">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-on-primary transition-colors overflow-hidden">
+<svg class="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Water Supply & Sewage</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Auto-routes to Municipal Water & Hydrology Board</p>
+<div class="mt-space-sm flex items-center gap-space-xs">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-semibold">2 Days Max SLA</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">• Code 204</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Garbage & Solid Waste -->
+<div class="dept-card group p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer shadow-sm" role="button" tabindex="0">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-on-primary transition-colors overflow-hidden">
+<svg class="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Garbage & Solid Waste</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Auto-routes to Sanitation & Environmental Services</p>
+<div class="mt-space-sm flex items-center gap-space-xs">
+<span class="bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-semibold">1 Day Max SLA</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">• Code 318</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 4: Streetlights & Electrical -->
+<div class="dept-card group p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer shadow-sm" role="button" tabindex="0">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-on-primary transition-colors overflow-hidden">
+<svg class="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Streetlights & Electrical</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Auto-routes to Municipal Grid & Energy Dept</p>
+<div class="mt-space-sm flex items-center gap-space-xs">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm px-space-sm py-0.5 rounded-full font-semibold">2 Days Max SLA</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">• Code 409</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 2: Grievance Details & Urgency Assessment -->
+<div class="bg-surface-container-lowest p-space-xl rounded-xl shadow-sm space-y-space-lg">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-2xl">description</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">2. Incident Specifics & Severity Assessment</h2>
+</div>
+<!-- Title Input -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface mb-space-xs" for="grievance-title">
+              Grievance Headline / Issue Title <span class="text-error">*</span>
+</label>
+<div class="relative">
+<input class="w-full h-12 px-space-md bg-surface-container-low text-on-surface rounded-lg font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest shadow-sm" id="grievance-title" placeholder="e.g. Severe Pothole causing traffic obstruction on Main St" type="text" value="Severe asphalt depression & pothole causing vehicle hazard on Main St"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1 block">State the problem clearly to assist field engineers with triage.</span>
+</div>
+<!-- Description Textarea with Live Counter -->
+<div>
+<div class="flex items-center justify-between mb-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface" for="grievance-desc">
+                Detailed Incident Description <span class="text-error">*</span>
+</label>
+<span class="font-body-sm text-body-sm text-on-surface-variant" id="char-counter">248 / 1000 characters</span>
+</div>
+<textarea class="w-full p-space-md bg-surface-container-low text-on-surface rounded-lg font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest shadow-sm resize-none" id="grievance-desc" placeholder="Include specifics..." rows="5">Deep circular road crater in the eastbound traffic lane of Main Street, opposite the school. Two vehicles observed sustaining tire damage.</textarea>
+<!-- Guidance Prompts Tags -->
+<div class="flex flex-wrap items-center gap-space-xs mt-space-sm pt-space-xs" id="guidance-tags">
+<span class="font-label-sm text-label-sm text-on-surface-variant mr-1">Recommended inclusions:</span>
+<button class="bg-surface-container px-space-sm py-1 rounded-full font-label-sm text-label-sm text-on-surface hover:bg-surface-container-high transition-colors" type="button">+ Road lane direction</button>
+<button class="bg-surface-container px-space-sm py-1 rounded-full font-label-sm text-label-sm text-on-surface hover:bg-surface-container-high transition-colors" type="button">+ Utility pipe exposure</button>
+<button class="bg-surface-container px-space-sm py-1 rounded-full font-label-sm text-label-sm text-on-surface hover:bg-surface-container-high transition-colors" type="button">+ School zone proximity</button>
+</div>
+</div>
+<!-- Urgency & Public Safety Level Toggle -->
+<div class="bg-surface-container-low p-space-md rounded-xl space-y-space-sm">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-label-lg text-label-lg text-on-surface block">Urgency & Public Safety Classification</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Emergency flag initiates immediate supervisor phone ping and priority dispatch.</span>
+</div>
+<span class="material-symbols-outlined text-secondary text-2xl">health_and_safety</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm mt-space-sm" id="urgency-toggle">
+<button class="urgency-btn p-space-md rounded-lg bg-surface-container-lowest text-left shadow-sm flex items-start gap-space-sm transition-all ring-2 ring-primary" type="button">
+<span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Standard Public Service</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Routine civic SLA tracking applies</span>
+</div>
+</button>
+<button class="urgency-btn p-space-md rounded-lg bg-surface-container-lowest text-left shadow-sm flex items-start gap-space-sm transition-all opacity-70 hover:opacity-100" type="button">
+<span class="material-symbols-outlined text-error mt-0.5">report_problem</span>
+<div>
+<span class="font-label-md text-label-md text-error block">Immediate Hazard / Critical</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Active danger to life or transit safety</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+<!-- SECTION 3: Location Verification & Map -->
+<div class="bg-surface-container-lowest p-space-xl rounded-xl shadow-sm space-y-space-lg">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-2xl">pin_drop</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">3. Geographic Verification & GPS Anchor</h2>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary-container bg-tertiary-fixed px-space-sm py-space-xs rounded-full font-semibold">Ward 4 Validated</span>
+</div>
+<!-- Address Autocomplete Search Bar -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface mb-space-xs" for="address-input">
+              Municipal Property Address / Street Landmark <span class="text-error">*</span>
+</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-space-md text-primary">search</span>
+<input class="w-full h-12 pl-12 pr-28 bg-surface-container-low text-on-surface rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest shadow-sm" id="address-input" placeholder="Search address, landmark, or intersection..." type="text" value="Near 742 Evergreen Terrace, Ward 4, Metropolitan East"/>
+<button class="absolute right-2 px-space-sm py-1.5 bg-surface-container text-primary hover:bg-surface-container-high rounded-md font-label-sm text-label-sm transition-colors flex items-center gap-1" id="recenter-map-btn" type="button">
+<span class="material-symbols-outlined text-sm">my_location</span> Recenter
+              </button>
+</div>
+</div>
+<!-- Interactive Simulated Map Container -->
+<div class="relative rounded-xl overflow-hidden shadow-md">
+<div class="w-full h-72 bg-cover bg-center" data-location="742 Evergreen Terrace, Springfield" style="background-image: url('https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg')"></div>
+<!-- Map Overlay Controls -->
+<div class="absolute top-space-md left-space-md bg-surface-container-lowest/90 backdrop-blur-md px-space-md py-space-xs rounded-lg shadow-sm flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-lg">explore</span>
+<span class="font-label-sm text-label-sm text-on-surface">Lat: 40.7128° N, Long: 74.0060° W</span>
+</div>
+<!-- Pin Callout Box -->
+<div class="absolute bottom-space-md left-space-md right-space-md bg-surface-container-lowest/95 backdrop-blur-md p-space-md rounded-xl shadow-lg flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-8 h-8 rounded-full bg-error text-on-error flex items-center justify-center">
+<span class="material-symbols-outlined text-base">location_on</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Pinned Point: Public Roadway Sector 4-B</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Maintenance Zone 12 • Grid Authority: Metro PWD</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container px-space-sm py-1 rounded text-primary font-mono font-bold">ACCURACY 99.4%</span>
+</div>
+</div>
+<!-- Landmark Reference Note -->
+<div class="flex items-start gap-space-sm bg-surface-container-low p-space-md rounded-lg">
+<span class="material-symbols-outlined text-secondary text-xl mt-0.5">info</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+<strong class="text-on-surface font-semibold">Landmark Proximity Note:</strong> Identified adjacent to Municipal Hydrant #440-E and directly opposite the primary school pedestrian crossing. Automatic work-crew parking permits will be dispatched.
+            </p>
+</div>
+</div>
+</div>
+<!-- Right Column: Citizen Assurance, SLA & Submission Dock (4 Cols) -->
+<div class="lg:col-span-4 space-y-space-lg lg:sticky lg:top-28">
+<!-- SLA Mandate & Time-to-Resolution Card -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-md space-y-space-md overflow-hidden relative">
+<div class="absolute top-0 left-0 right-0 h-1.5 bg-primary"></div>
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider block">STATUTORY BINDING GUARANTEE</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-0.5">Municipal SLA Enforcement Mandate</h3>
+</div>
+<div class="w-8 h-8 rounded-lg bg-surface-container text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">gavel</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Once submitted, your complaint initiates a legally auditable <strong>72-hour backend SLA timer</strong>. If field rectification is not initiated within this strict interval, ticket authority systematically escalates to the Municipal Senior Director.
+          </p>
+<!-- SVG Radial / Visual Progress Metric -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex items-center gap-space-md">
+<div class="relative w-16 h-16 flex-shrink-0 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-headline-sm text-headline-sm text-primary font-bold">72h</span>
+</div>
+<div class="min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase block">Target Completion</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold block truncate">Thursday, Oct 17, 09:30 AM</span>
+<span class="font-body-sm text-body-sm text-tertiary flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-xs">timer</span> Maximum Resolution Ceiling
+              </span>
+</div>
+</div>
+<!-- Dynamic Department Assignment Routing -->
+<div class="space-y-space-xs pt-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Assigned Routing Node</span>
+<div class="p-space-md bg-surface-container rounded-lg flex items-center gap-space-md">
+<img class="w-12 h-12 rounded-lg object-cover flex-shrink-0 shadow-sm" data-alt="Municipal government administrative seal and engineering headquarters building exterior, clean architectural photograph symbolizing institutional trust and civic oversight." src="https://picsum.photos/100/100?random=2"/>
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-on-surface block truncate">Public Works Dept - Ward 4 Division</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate block">Supervisor: Eng. Marcus Vance</span>
+<span class="font-label-sm text-label-sm text-primary">Direct Desk: #882-PWD</span>
+</div>
+</div>
+</div>
+<!-- Auto-Escalation Ladder Visualization -->
+<div class="bg-surface-container-low p-space-md rounded-lg space-y-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface uppercase font-bold block">Automated Escalation Steps:</span>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary flex-shrink-0"></span>
+<span><strong>0 - 24 hrs:</strong> Ward 4 Rapid Assessment</span>
+</div>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-secondary-container flex-shrink-0"></span>
+<span><strong>24 - 48 hrs:</strong> On-Site Maintenance Crew Mobilized</span>
+</div>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-error flex-shrink-0"></span>
+<span><strong>72+ hrs:</strong> Executive Escalation to Ombudsman</span>
+</div>
+</div>
+<!-- Citizen Declaration & Attestation Box -->
+<div class="pt-space-xs">
+<label class="flex items-start gap-space-sm cursor-pointer select-none">
+<input checked="" id="declaration-checkbox" class="mt-1 w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+                I declare under penalty of civil ordinance that the incident details and geographic coordinates provided are truthful and located within municipal jurisdiction boundaries.
+              </span>
+</label>
+</div>
+<!-- Action Buttons CTA -->
+<div class="space-y-space-sm pt-space-sm">
+<button class="w-full h-12 bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg rounded-lg shadow-md transition-all flex items-center justify-center gap-space-sm active:scale-[0.98]" id="submit-ticket-btn" type="button">
+<span class="material-symbols-outlined text-xl">send</span>
+<span>Submit Grievance & Trigger SLA</span>
+</button>
+</div>
+<div class="text-center pt-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm text-tertiary">lock</span> Protected by 256-bit Civic Key Authentication
+            </span>
+</div>
+</div>
+<!-- Ombudsman Assistance Card -->
+<div class="bg-surface-container-low p-space-md rounded-xl shadow-sm flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-2xl">support_agent</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Need Guidance on Filing?</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Call the Citizen Intake Ombudsman at <strong>1800-419-CIVIC</strong> or use TTY Relay.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Micro-interaction Script for Interactive Category and Urgency Selections -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("GrievanceTrack UI Script Initialized");
+      // Dynamic Department Category Card Selectors
+      const deptCards = document.querySelectorAll('.dept-card');
+      deptCards.forEach(card => {
+        card.addEventListener('click', () => {
+          deptCards.forEach(c => {
+            c.classList.remove('ring-2', 'ring-primary', 'bg-surface-container-low');
+            c.classList.add('bg-surface-container-lowest');
+            const badge = c.querySelector('.absolute.top-0.right-0');
+            if (badge) badge.remove();
+          });
+          card.classList.remove('bg-surface-container-lowest');
+          card.classList.add('ring-2', 'ring-primary', 'bg-surface-container-low');
+          
+          if (!card.querySelector('.absolute.top-0.right-0')) {
+            const badge = document.createElement('div');
+            badge.className = 'absolute top-0 right-0 bg-primary text-on-primary font-label-sm text-label-sm px-space-sm py-1 rounded-bl-lg flex items-center gap-1';
+            badge.innerHTML = '<svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Selected';
+            card.appendChild(badge);
+          }
+        });
+      });
 
-        <main>
-            <!-- Submit Grievance Section -->
-            <section class="glass-panel form-section">
-                <h2>Submit a Grievance</h2>
-                <form id="grievanceForm">
-                    <div class="input-group">
-                        <label for="categoryId">Category ID</label>
-                        <input type="number" id="categoryId" placeholder="e.g. 1 for Infrastructure" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="description">Description</label>
-                        <textarea id="description" rows="4" placeholder="Describe the issue in detail..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn-primary">Submit Grievance</button>
-                </form>
-                <div id="submitMessage" class="hidden"></div>
-            </section>
+      // Urgency Classification Toggle
+      const urgencyBtns = document.querySelectorAll('.urgency-btn');
+      urgencyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          urgencyBtns.forEach(b => {
+            b.classList.remove('ring-2', 'ring-primary', 'ring-error');
+            b.classList.add('opacity-70');
+          });
+          btn.classList.remove('opacity-70');
+          if (btn.innerText.includes('Immediate Hazard')) {
+            btn.classList.add('ring-2', 'ring-error');
+          } else {
+            btn.classList.add('ring-2', 'ring-primary');
+          }
+        });
+      });
 
-            <!-- List Grievances Section -->
-            <section class="glass-panel list-section">
-                <div class="section-header">
-                    <h2>Recent Grievances</h2>
-                    <button id="refreshBtn" class="btn-secondary">Refresh</button>
-                </div>
-                <div id="grievanceList" class="grievance-grid">
-                    <!-- Grievance cards will be injected here via JavaScript -->
-                </div>
-            </section>
-        </main>
-    </div>
+      // Real-time Character Counter
+      const textarea = document.getElementById('grievance-desc');
+      const counter = document.getElementById('char-counter');
+      if (textarea && counter) {
+        textarea.addEventListener('input', () => {
+          counter.textContent = textarea.value.length + ' / 1000 characters';
+        });
+      }
 
-    <script src="script.js"></script>
-</body>
-</html>
+      // Submission micro-interaction
+      const submitBtn = document.getElementById('submit-ticket-btn');
+      if (submitBtn) {
+        submitBtn.addEventListener('click', async () => {
+          submitBtn.innerHTML = '<span class="material-symbols-outlined text-xl animate-spin">refresh</span><span>Transmitting to SLA Engine...</span>';
+          
+          const description = document.getElementById('grievance-desc').value;
+          const location = document.getElementById('address-input').value;
+          
+          // Determine Category ID from the selected card
+          let categoryId = 1;
+          const selectedDept = document.querySelector('.dept-card.ring-2 h3');
+          if (selectedDept) {
+             const title = selectedDept.innerText;
+             if (title.includes('Water')) categoryId = 2;
+             else if (title.includes('Garbage')) categoryId = 3;
+             else if (title.includes('Streetlight')) categoryId = 4;
+          }
+
+          try {
+              const response = await fetch('/api/grievances', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                      categoryId: categoryId,
+                      description: description,
+                      location: location
+                  })
+              });
+              
+              if (!response.ok) throw new Error('API failed');
+
+              setTimeout(() => {
+                submitBtn.innerHTML = '<span class="material-symbols-outlined text-xl">done_all</span><span>Grievance #GRV-9841 Logged!</span>';
+                submitBtn.classList.remove('bg-primary');
+                submitBtn.classList.add('bg-tertiary-container');
+              }, 1200);
+          } catch(e) {
+              setTimeout(() => {
+                submitBtn.innerHTML = '<span class="material-symbols-outlined text-xl">error</span><span>Failed to connect to API</span>';
+                submitBtn.classList.remove('bg-primary');
+                submitBtn.classList.add('bg-error');
+              }, 1200);
+          }
+        });
+      }
+
+      // Checkbox toggles submit button state
+      const checkbox = document.getElementById('declaration-checkbox');
+      if (checkbox && submitBtn) {
+        checkbox.addEventListener('change', (e) => {
+          submitBtn.disabled = !e.target.checked;
+          if (!e.target.checked) {
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            submitBtn.classList.remove('hover:bg-primary-container');
+          } else {
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            submitBtn.classList.add('hover:bg-primary-container');
+          }
+        });
+      }
+
+
+
+      // Guidance tags interaction
+      const tagsContainer = document.getElementById('guidance-tags');
+      const descTextarea = document.getElementById('grievance-desc');
+      if (tagsContainer && descTextarea) {
+        const buttons = tagsContainer.querySelectorAll('button');
+        buttons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const tagText = btn.innerText.replace('+', '').trim();
+            descTextarea.value += (descTextarea.value.length > 0 ? ' ' : '') + tagText;
+            // Also trigger the counter update
+            const event = new Event('input');
+            descTextarea.dispatchEvent(event);
+          });
+        });
+      }
+
+      // Map Recenter
+      const recenterBtn = document.getElementById('recenter-map-btn');
+      if (recenterBtn) {
+        recenterBtn.addEventListener('click', () => {
+          alert("GPS Map centered on current location! (Prototype Feature)");
+        });
+      }
+
+
+    });
+  </script>
+</div></main><footer class="w-full bg-surface-container-low border-t border-outline-variant/40 pt-space-xl pb-space-lg"><div class="max-w-7xl mx-auto px-gutter grid grid-cols-1 md:grid-cols-4 gap-space-xl mb-space-xl"><div><div class="flex items-center gap-space-sm mb-space-sm"><img alt="Brand logo. - Primary color: #1e40af
+- Font: publicSans
+- Mode: light
+- Roundness: rounded-md
+" class="h-6 w-auto object-contain" src="https://placehold.co/200x60?text=GrievanceTrack+Logo" /><span class="font-headline-sm text-headline-sm text-primary">GrievanceTrack</span></div><p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">Metropolitan Public Administration & Citizens Rights Portal. Delivering transparent, binding, and auditable dispute resolution across all civic wards.</p><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary text-base">verified</span><span class="font-label-sm text-label-sm text-primary">ISO 9001:2015 Civic SLA Certified</span></div></div><div><h4 class="font-label-lg text-label-lg text-on-surface mb-space-md">Emergency & Citizen Helplines</h4><ul class="space-y-space-xs font-body-sm text-body-sm text-on-surface-variant"><li>Central Municipal Control: <span class="font-label-md text-on-surface font-semibold">1800-419-CIVIC</span></li><li>Ward 4 Dispatch Center: <span class="font-label-md text-on-surface font-semibold">1800-419-0004</span></li><li>SLA Breach Escalation Desk: <span class="font-label-md text-on-surface font-semibold">Desk 901</span></li><li>Disaster & Hazardous Services: <span class="font-label-md text-error font-semibold">112</span></li></ul></div><div><h4 class="font-label-lg text-label-lg text-on-surface mb-space-md">Open Civic Data & Transparency</h4><ul class="space-y-space-xs font-body-sm text-body-sm text-on-surface-variant"><li><a class="hover:text-primary transition-colors" data-path="public-sla-escalation-board" href="#">Metropolitan SLA Compliance Report</a></li><li><a class="hover:text-primary transition-colors" data-path="municipal-departments" href="#">Departmental Performance Indices</a></li><li><a class="hover:text-primary transition-colors" data-path="public-sla-escalation-board" href="#">Public Grievance Registry & Ledger</a></li><li><a class="hover:text-primary transition-colors" data-path="help-ombudsman" href="#">Citizens Right to Service Charter</a></li></ul></div><div><h4 class="font-label-lg text-label-lg text-on-surface mb-space-md">Independent Ombudsman</h4><p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Complaints unaddressed beyond Level 3 SLA automatically trigger an independent inquiry by the Metropolitan Ombudsman Office.</p><a class="inline-flex items-center gap-space-xs font-label-md text-label-md text-primary hover:underline" data-path="help-ombudsman" href="#"><span class="material-symbols-outlined text-base">account_balance</span>Ombudsman Arbitration Board</a></div></div><div class="max-w-7xl mx-auto px-gutter pt-space-md border-t border-outline-variant/30 flex flex-col md:flex-row items-center justify-between text-on-surface-variant font-label-sm text-label-sm gap-space-sm"><span>© 2025 Metropolitan Municipal Corporation. GrievanceTrack Portal. All public records protected under Right to Information act.</span><div class="flex gap-space-lg"><a class="hover:text-on-surface" data-path="help-ombudsman" href="#">Privacy Statement</a><a class="hover:text-on-surface" data-path="help-ombudsman" href="#">Terms of Civic Service</a><a class="hover:text-on-surface" data-path="help-ombudsman" href="#">Accessibility Statement</a></div></div></footer></body></html>
