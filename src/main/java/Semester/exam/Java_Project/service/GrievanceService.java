@@ -12,7 +12,6 @@ import java.util.List;
 @Service
 public class GrievanceService {
 
-    // Spring automatically injects the repositories you created in Phase 3
     private final GrievanceRepository grievanceRepo;
     private final CategoryRepository categoryRepo;
     private final EscalationRepository escalationRepo;
@@ -23,46 +22,32 @@ public class GrievanceService {
         this.escalationRepo = escalationRepo;
     }
 
-    // --- RULE 1: Grievance Creation & Auto-Routing ---
     public Grievance createGrievance(Long categoryId, String description) {
-        // 1. Fetch the category (which inherently knows its assigned Department)
         Category category = categoryRepo.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category with ID " + categoryId + " not found"));
 
-        // 2. Build the grievance
         Grievance newGrievance = new Grievance();
         newGrievance.setDescription(description);
         newGrievance.setStatus(GrievanceStatus.OPEN);
-        newGrievance.setCategory(category); // This implicitly routes it to the correct Department
+        newGrievance.setCategory(category);
 
-        // 3. Save it to the database
         return grievanceRepo.save(newGrievance);
     }
 
-    // --- RULE 2: SLA Escalation Engine ---
-    // The @Scheduled annotation runs this method automatically.
-    // "0 0 0 * * ?" is a Cron expression meaning "Run every day at midnight"
     @Scheduled(cron = "0 0 0 * * ?")
     public void escalateOverdueGrievances() {
-
-        // 1. Find all active grievances
         List<Grievance> activeGrievances = grievanceRepo.findByStatusIn(
                 List.of(GrievanceStatus.OPEN, GrievanceStatus.IN_PROGRESS)
         );
-
         LocalDateTime now = LocalDateTime.now();
-
-        // 2. Evaluate each grievance against its SLA
         for (Grievance grievance : activeGrievances) {
             long daysOpen = ChronoUnit.DAYS.between(grievance.getCreatedAt(), now);
             int slaLimit = grievance.getCategory().getSlaDays();
 
             if (daysOpen > slaLimit) {
-                // Change status
                 grievance.setStatus(GrievanceStatus.ESCALATED);
                 grievanceRepo.save(grievance);
 
-                // Generate Escalation Record
                 Escalation escalation = new Escalation();
                 escalation.setGrievance(grievance);
                 escalation.setReason("SLA Breached by " + (daysOpen - slaLimit) + " days. Auto-escalated to Senior Officer.");
@@ -75,25 +60,30 @@ public class GrievanceService {
 
     // --- RULE 3: Update Status ---
     public Grievance updateStatus(Long grievanceId, GrievanceStatus newStatus) {
-            Grievance grievance = grievanceRepo.findById(grievanceId)
-                    .orElseThrow(() -> new RuntimeException("Grievance not found"));
-            grievance.setStatus(newStatus);
-            return grievanceRepo.save(grievance);
-        }
+        Grievance grievance = grievanceRepo.findById(grievanceId)
+                // CHANGED: Throw specific 404 exception instead of RuntimeException
+                .orElseThrow(() -> new ResourceNotFoundException("Grievance not found"));
 
-        // --- RULE 4: Submit Rating ---
-        public Grievance submitRating(Long grievanceId, int rating) {
-            Grievance grievance = grievanceRepo.findById(grievanceId)
-                    .orElseThrow(() -> new RuntimeException("Grievance not found"));
-            if (grievance.getStatus() != GrievanceStatus.RESOLVED) {
-                throw new RuntimeException("Can only rate resolved grievances");
-            }
-            grievance.setRating(rating);
-            return grievanceRepo.save(grievance);
-        }
+        grievance.setStatus(newStatus);
+        return grievanceRepo.save(grievance);
+    }
 
-        // --- RULE 5: Fetch by Department ---
-        public List<Grievance> getGrievancesByDepartment(Long departmentId) {
-            return grievanceRepo.findByCategoryDepartmentId(departmentId);
+    // --- RULE 4: Submit Rating ---
+    public Grievance submitRating(Long grievanceId, int rating) {
+        Grievance grievance = grievanceRepo.findById(grievanceId)
+                // CHANGED: Throw specific 404 exception instead of RuntimeException
+                .orElseThrow(() -> new ResourceNotFoundException("Grievance not found"));
+
+        if (grievance.getStatus() != GrievanceStatus.RESOLVED) {
+            // CHANGED: Throw IllegalStateException for the logic rule
+            throw new IllegalStateException("Can only rate resolved grievances");
         }
+        grievance.setRating(rating);
+        return grievanceRepo.save(grievance);
+    }
+
+    // --- RULE 5: Fetch by Department ---
+    public List<Grievance> getGrievancesByDepartment(Long departmentId) {
+        return grievanceRepo.findByCategoryDepartmentId(departmentId);
+    }
 }

@@ -1,4 +1,4 @@
-package Semester.exam.Java_Project.dto;
+package Semester.exam.Java_Project.DTO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

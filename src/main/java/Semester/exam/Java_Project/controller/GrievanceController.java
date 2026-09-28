@@ -1,6 +1,6 @@
 package Semester.exam.Java_Project.controller;
 
-import Semester.exam.Java_Project.dto.GrievanceRequestDTO;
+import Semester.exam.Java_Project.DTO.GrievanceRequestDTO;
 import Semester.exam.Java_Project.entity.Grievance;
 import Semester.exam.Java_Project.entity.GrievanceStatus;
 import Semester.exam.Java_Project.service.GrievanceService;
