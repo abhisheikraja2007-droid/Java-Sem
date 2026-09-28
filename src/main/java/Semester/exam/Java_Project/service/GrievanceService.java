@@ -91,11 +91,19 @@ public class GrievanceService {
 
     // --- RULE 4: Submit Rating ---
     public Grievance submitRating(Long grievanceId, int rating) {
+        // Validate rating range before touching the database
+        if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException(
+                "Rating must be between 1 and 5. You provided: " + rating);
+        }
+
         Grievance grievance = grievanceRepo.findById(grievanceId)
-                .orElseThrow(() -> new ResourceNotFoundException("Grievance not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Grievance not found with ID: " + grievanceId));
 
         if (grievance.getStatus() != GrievanceStatus.RESOLVED) {
-            throw new IllegalStateException("Can only rate resolved grievances");
+            throw new IllegalStateException(
+                "Cannot rate grievance ID " + grievanceId + " because it is not yet RESOLVED. " +
+                "Current status: " + grievance.getStatus());
         }
         grievance.setRating(rating);
         return grievanceRepo.save(grievance);
