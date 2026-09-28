@@ -3,8 +3,13 @@ package Semester.exam.Java_Project.service;
 import Semester.exam.Java_Project.entity.*;
 import Semester.exam.Java_Project.repository.*;
 import Semester.exam.Java_Project.exception.ResourceNotFoundException;
+import Semester.exam.Java_Project.event.GrievanceEscalatedEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -15,11 +20,15 @@ public class GrievanceService {
     private final GrievanceRepository grievanceRepo;
     private final CategoryRepository categoryRepo;
     private final EscalationRepository escalationRepo;
+    private final ApplicationEventPublisher eventPublisher; // ADDED for Event-Driven Notifications
 
-    public GrievanceService(GrievanceRepository grievanceRepo, CategoryRepository categoryRepo, EscalationRepository escalationRepo) {
+    // ADDED ApplicationEventPublisher to Constructor
+    public GrievanceService(GrievanceRepository grievanceRepo, CategoryRepository categoryRepo,
+                            EscalationRepository escalationRepo, ApplicationEventPublisher eventPublisher) {
         this.grievanceRepo = grievanceRepo;
         this.categoryRepo = categoryRepo;
         this.escalationRepo = escalationRepo;
+        this.eventPublisher = eventPublisher;
     }
 
     public Grievance createGrievance(Long categoryId, String description) {
@@ -54,6 +63,9 @@ public class GrievanceService {
                 escalationRepo.save(escalation);
 
                 System.out.println("Escalated Grievance ID: " + grievance.getId());
+
+                // ADDED: Publish the event so the Listener can send notifications
+                eventPublisher.publishEvent(new GrievanceEscalatedEvent(this, grievance));
             }
         }
     }
@@ -61,7 +73,6 @@ public class GrievanceService {
     // --- RULE 3: Update Status ---
     public Grievance updateStatus(Long grievanceId, GrievanceStatus newStatus) {
         Grievance grievance = grievanceRepo.findById(grievanceId)
-                // CHANGED: Throw specific 404 exception instead of RuntimeException
                 .orElseThrow(() -> new ResourceNotFoundException("Grievance not found"));
 
         grievance.setStatus(newStatus);
@@ -71,19 +82,17 @@ public class GrievanceService {
     // --- RULE 4: Submit Rating ---
     public Grievance submitRating(Long grievanceId, int rating) {
         Grievance grievance = grievanceRepo.findById(grievanceId)
-                // CHANGED: Throw specific 404 exception instead of RuntimeException
                 .orElseThrow(() -> new ResourceNotFoundException("Grievance not found"));
 
         if (grievance.getStatus() != GrievanceStatus.RESOLVED) {
-            // CHANGED: Throw IllegalStateException for the logic rule
             throw new IllegalStateException("Can only rate resolved grievances");
         }
         grievance.setRating(rating);
         return grievanceRepo.save(grievance);
     }
 
-    // --- RULE 5: Fetch by Department ---
-    public List<Grievance> getGrievancesByDepartment(Long departmentId) {
-        return grievanceRepo.findByCategoryDepartmentId(departmentId);
+    // --- RULE 5: Fetch by Department (UPDATED for Pagination) ---
+    public Page<Grievance> getGrievancesByDepartment(Long departmentId, Pageable pageable) {
+        return grievanceRepo.findByCategoryDepartmentId(departmentId, pageable);
     }
 }

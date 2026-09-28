@@ -5,10 +5,10 @@ import Semester.exam.Java_Project.entity.Grievance;
 import Semester.exam.Java_Project.entity.GrievanceStatus;
 import Semester.exam.Java_Project.service.GrievanceService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/grievances")
@@ -22,7 +22,7 @@ public class GrievanceController {
     }
 
     // 1. Submit a new grievance using a JSON Request Body and Validation
-    // POST http://localhost:8080/api/grievances/
+    // POST http://localhost:8080/api/grievances
     // JSON Body: { "categoryId": 1, "description": "Pothole on Main St" }
     @PostMapping
     public ResponseEntity<Grievance> submitGrievance(@Valid @RequestBody GrievanceRequestDTO request) {
@@ -49,11 +49,18 @@ public class GrievanceController {
         return ResponseEntity.ok(ratedGrievance);
     }
 
-    // 4. Fetch all grievances for a specific department
-    // GET http://localhost:8080/api/grievances/department/1
+    // 4. Fetch all grievances for a specific department (UPDATED for Pagination)
+    // GET http://localhost:8080/api/grievances/department/1?page=0&size=5&sort=createdAt,desc
     @GetMapping("/department/{departmentId}")
-    public ResponseEntity<List<Grievance>> getByDepartment(@PathVariable Long departmentId) {
-        List<Grievance> grievances = grievanceService.getGrievancesByDepartment(departmentId);
+    public ResponseEntity<Page<Grievance>> getByDepartment(@PathVariable Long departmentId, Pageable pageable) {
+        Page<Grievance> grievances = grievanceService.getGrievancesByDepartment(departmentId, pageable);
         return ResponseEntity.ok(grievances);
+    }
+
+    // TEMPORARY ENDPOINT FOR TESTING THE SLA ENGINE
+    @PostMapping("/test/trigger-sla")
+    public ResponseEntity<String> testSlaEngine() {
+        grievanceService.escalateOverdueGrievances();
+        return ResponseEntity.ok("SLA Engine triggered. Check your database!");
     }
 }
