@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -155,14 +156,21 @@ public class GlobalExceptionHandler {
      * Thrown when the request URL does not match any controller endpoint.
      * Example: GET /api/nonexistent
      * HTTP 404 Not Found
-     *
-     * NOTE: Requires spring.mvc.throw-exception-if-no-handler-found=true
-     *       and spring.web.resources.add-mappings=false in application.properties
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoHandler(NoHandlerFoundException ex) {
         return build(HttpStatus.NOT_FOUND, "Not Found",
                 "No endpoint found for: " + ex.getHttpMethod() + " " + ex.getRequestURL());
+    }
+
+    /**
+     * Thrown by Spring Boot 3.2+ when no static resource or controller matches the request.
+     * HTTP 404 Not Found
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResource(NoResourceFoundException ex) {
+        return build(HttpStatus.NOT_FOUND, "Not Found",
+                "No endpoint or resource found for: " + ex.getHttpMethod() + " " + ex.getResourcePath());
     }
 
     /**
