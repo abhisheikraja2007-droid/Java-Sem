@@ -5,7 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
+
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -217,21 +217,7 @@ public class GlobalExceptionHandler {
     }
 
     // -------------------------------------------------------
-    // 5. SECURITY EXCEPTIONS
-    // -------------------------------------------------------
-
-    /**
-     * Thrown when an authenticated user tries to access a resource they don't have permission for.
-     * HTTP 403 Forbidden
-     */
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
-        return build(HttpStatus.FORBIDDEN, "Forbidden",
-                "You do not have permission to perform this action.");
-    }
-
-    // -------------------------------------------------------
-    // 6. UNEXPECTED / PROGRAMMING ERRORS
+    // 5. UNEXPECTED / PROGRAMMING ERRORS
     // -------------------------------------------------------
 
     /**
