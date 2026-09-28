@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
+@Transactional
 public class GrievanceService {
 
     private static final Logger log = LoggerFactory.getLogger(GrievanceService.class);
@@ -115,6 +117,9 @@ public class GrievanceService {
 
     // --- RULE 3: Update Status ---
     public Grievance updateStatus(Long grievanceId, GrievanceStatus newStatus) {
+        if (newStatus == null) {
+            throw new IllegalArgumentException("New status cannot be null");
+        }
         Grievance grievance = grievanceRepo.findById(grievanceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Grievance not found"));
         grievance.setStatus(newStatus);

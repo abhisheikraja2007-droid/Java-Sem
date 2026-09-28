@@ -24,9 +24,12 @@ public class AuthController {
     // POST /api/auth/login
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO request) {
-        User user = userRepository.findByUsername(request.getUsername()).orElse(null);
+        String cleanUsername = request.getUsername() != null ? request.getUsername().trim() : "";
+        String password = request.getPassword() != null ? request.getPassword() : "";
 
-        if (user == null || !user.getPassword().equals(request.getPassword())) {
+        User user = userRepository.findByUsername(cleanUsername).orElse(null);
+
+        if (user == null || !user.getPassword().equals(password)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Invalid username or password"));
         }

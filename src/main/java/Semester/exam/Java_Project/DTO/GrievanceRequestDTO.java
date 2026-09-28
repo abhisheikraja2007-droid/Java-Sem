@@ -12,11 +12,11 @@ public class GrievanceRequestDTO {
     private Long categoryId;
 
     @NotBlank(message = "Grievance description cannot be empty")
-    @Size(min = 10, max = 2000, message = "Description must be between 10 and 2000 characters")
+    @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
     private String description;
 
     @NotBlank(message = "Location cannot be empty")
-    @Size(min = 3, max = 500, message = "Location must be between 3 and 500 characters")
+    @Size(min = 3, max = 255, message = "Location must be between 3 and 255 characters")
     private String location;
 
     // Username of the logged-in citizen filing the grievance
