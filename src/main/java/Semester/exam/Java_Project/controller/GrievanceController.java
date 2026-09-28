@@ -6,7 +6,9 @@ import Semester.exam.Java_Project.entity.GrievanceStatus;
 import Semester.exam.Java_Project.service.GrievanceService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +57,18 @@ public class GrievanceController {
     public ResponseEntity<Page<Grievance>> getByDepartment(@PathVariable Long departmentId, Pageable pageable) {
         Page<Grievance> grievances = grievanceService.getGrievancesByDepartment(departmentId, pageable);
         return ResponseEntity.ok(grievances);
+    }
+
+    @GetMapping
+    public Page<Grievance> getAllGrievances(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy) {
+
+        // Create a Pageable object with sorting applied (e.g., newest first)
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+
+        return grievanceService.getAllGrievances(pageable);
     }
 
     // TEMPORARY ENDPOINT FOR TESTING THE SLA ENGINE
