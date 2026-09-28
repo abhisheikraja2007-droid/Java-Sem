@@ -24,30 +24,38 @@ public class GrievanceService {
     private final GrievanceRepository grievanceRepo;
     private final CategoryRepository categoryRepo;
     private final EscalationRepository escalationRepo;
-    private final ApplicationEventPublisher eventPublisher; // ADDED for Event-Driven Notifications
+    private final UserRepository userRepo;
+    private final ApplicationEventPublisher eventPublisher;
 
-    // ADDED ApplicationEventPublisher to Constructor
     public GrievanceService(GrievanceRepository grievanceRepo, CategoryRepository categoryRepo,
-                            EscalationRepository escalationRepo, ApplicationEventPublisher eventPublisher) {
+                            EscalationRepository escalationRepo, UserRepository userRepo,
+                            ApplicationEventPublisher eventPublisher) {
         this.grievanceRepo = grievanceRepo;
         this.categoryRepo = categoryRepo;
         this.escalationRepo = escalationRepo;
+        this.userRepo = userRepo;
         this.eventPublisher = eventPublisher;
     }
 
-    public Grievance createGrievance(Long categoryId, String description, String location) {
+    // --- RULE 1: Create Grievance linked to citizen ---
+    public Grievance createGrievance(Long categoryId, String description, String location, String citizenUsername) {
         Category category = categoryRepo.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category with ID " + categoryId + " not found"));
+
+        User citizen = userRepo.findByUsername(citizenUsername)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + citizenUsername));
 
         Grievance newGrievance = new Grievance();
         newGrievance.setDescription(description);
         newGrievance.setLocation(location);
         newGrievance.setStatus(GrievanceStatus.OPEN);
         newGrievance.setCategory(category);
+        newGrievance.setCitizen(citizen);
 
         return grievanceRepo.save(newGrievance);
     }
 
+    // --- SLA Auto-Escalation (runs midnight daily) ---
     @Scheduled(cron = "0 0 0 * * ?")
     public void escalateOverdueGrievances() {
         List<Grievance> activeGrievances = grievanceRepo.findByStatusIn(
@@ -65,12 +73,10 @@ public class GrievanceService {
                 Escalation escalation = new Escalation();
                 escalation.setGrievance(grievance);
                 escalation.setReason("SLA Breached by " + (daysOpen - slaLimit) + " days. Auto-escalated to Senior Officer.");
-                escalation.setEscalatedTo("Senior Officer"); // Required: record which officer
+                escalation.setEscalatedTo("Senior Officer");
                 escalationRepo.save(escalation);
 
-                System.out.println("Escalated Grievance ID: " + grievance.getId());
-
-                // ADDED: Publish the event so the Listener can send notifications
+                log.warn("Escalated Grievance ID: {}", grievance.getId());
                 eventPublisher.publishEvent(new GrievanceEscalatedEvent(this, grievance));
             }
         }
@@ -80,27 +86,20 @@ public class GrievanceService {
     public Grievance updateStatus(Long grievanceId, GrievanceStatus newStatus) {
         Grievance grievance = grievanceRepo.findById(grievanceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Grievance not found"));
-
         grievance.setStatus(newStatus);
         grievanceRepo.save(grievance);
-        
-        // The Notification
-        log.info("NOTIFICATION: Grievance ID {} status has been updated to {}", grievance.getId(), newStatus);
-        
+        log.info("NOTIFICATION: Grievance ID {} status updated to {}", grievance.getId(), newStatus);
         return grievance;
     }
 
-    // --- RULE 4: Submit Rating ---
+    // --- RULE 4: Submit Rating (only when RESOLVED) ---
     public Grievance submitRating(Long grievanceId, int rating) {
-        // Validate rating range before touching the database
         if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException(
                 "Rating must be between 1 and 5. You provided: " + rating);
         }
-
         Grievance grievance = grievanceRepo.findById(grievanceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Grievance not found with ID: " + grievanceId));
-
         if (grievance.getStatus() != GrievanceStatus.RESOLVED) {
             throw new IllegalStateException(
                 "Cannot rate grievance ID " + grievanceId + " because it is not yet RESOLVED. " +
@@ -110,9 +109,25 @@ public class GrievanceService {
         return grievanceRepo.save(grievance);
     }
 
-    // --- RULE 5: Fetch by Department (UPDATED for Pagination) ---
+    // --- RULE 5: Fetch by Department ---
     public Page<Grievance> getGrievancesByDepartment(Long departmentId, Pageable pageable) {
         return grievanceRepo.findByCategoryDepartmentId(departmentId, pageable);
+    }
+
+    // --- My Complaints: Citizen sees only their own grievances ---
+    public Page<Grievance> getMyGrievances(String username, Pageable pageable) {
+        return grievanceRepo.findByCitizenUsername(username, pageable);
+    }
+
+    // --- Senior Officer: see all escalated grievances ---
+    public Page<Grievance> getEscalatedGrievances(Pageable pageable) {
+        return grievanceRepo.findByStatus(GrievanceStatus.ESCALATED, pageable);
+    }
+
+    // --- Get single grievance by ID ---
+    public Grievance getGrievanceById(Long id) {
+        return grievanceRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Grievance not found with ID: " + id));
     }
 
     public Page<Grievance> getAllGrievances(Pageable pageable) {

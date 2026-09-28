@@ -6,533 +6,795 @@
   <title>GrievanceTrack Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script id="tailwind-config">
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            primary: "#00288e",
-            "primary-container": "#1e40af",
-            "on-primary": "#ffffff",
-            secondary: "#904d00",
-            surface: "#f8f9ff",
-            "surface-low": "#eff4ff",
-            "surface-lowest": "#ffffff",
-            "surface-high": "#dce9ff",
-            "on-surface": "#0b1c30",
-            "on-surface-variant": "#444653",
-            tertiary: "#00563a",
-            "tertiary-container": "#e6f8f0",
-            error: "#ba1a1a",
-            "error-container": "#ffdad6",
-            border: "#d3e4fe"
+            primary:    "#1d4ed8",
+            "primary-dark": "#1e3a8a",
+            secondary:  "#7c3aed",
+            surface:    "#f1f5f9",
+            "surface-card": "#ffffff",
+            "on-surface": "#0f172a",
+            "on-surface-muted": "#64748b",
+            accent:     "#0ea5e9",
+            success:    "#16a34a",
+            warning:    "#d97706",
+            danger:     "#dc2626",
+            border:     "#e2e8f0"
           },
-          fontFamily: {
-            sans: ['"Public Sans"', 'sans-serif']
-          }
+          fontFamily: { sans: ['"Inter"', 'sans-serif'] }
         }
       }
     };
   </script>
+  <style>
+    .fade-in { animation: fadeIn .35s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+    .spin { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .star-btn:hover ~ .star-btn, .star-btn:hover { color: #f59e0b; }
+    .stars:hover .star-btn { color: #f59e0b; }
+    .stars .star-btn:hover ~ .star-btn { color: #94a3b8; }
+  </style>
 </head>
 <body class="bg-surface text-on-surface font-sans antialiased min-h-screen flex flex-col">
 
-  <!-- Clean Header -->
-  <header class="bg-surface-lowest border-b border-border shadow-sm sticky top-0 z-50">
+  <!-- ===== NAVBAR ===== -->
+  <nav class="bg-surface-card border-b border-border shadow-sm sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-lg shadow-sm">
-          GT
-        </div>
+        <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-sm shadow">GT</div>
         <div>
-          <h1 class="text-lg font-bold text-primary leading-tight">GrievanceTrack Portal</h1>
-          <p class="text-xs text-on-surface-variant">Metropolitan Municipal Grievance & SLA Engine</p>
+          <h1 class="text-base font-bold text-primary leading-tight">GrievanceTrack Portal</h1>
+          <p class="text-[11px] text-on-surface-muted">Municipal SLA Engine</p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-          <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-          MySQL Connected
-        </span>
+      <!-- User badge (hidden until logged in) -->
+      <div id="nav-user" class="hidden items-center gap-3">
+        <div id="nav-badge" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface text-xs font-semibold border border-border"></div>
+        <button onclick="logout()" class="text-xs text-on-surface-muted hover:text-danger transition-colors font-medium">Logout</button>
       </div>
     </div>
-  </header>
+  </nav>
 
-  <!-- Main Content Container -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
-    
-    <!-- Hero / Intro -->
-    <div>
-      <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary mb-1">
-        <span>Citizen Portal</span>
-        <span>•</span>
-        <span>Official Intake Workflow</span>
-      </div>
-      <h2 class="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">File an Official Grievance</h2>
-      <p class="text-sm text-on-surface-variant mt-1 max-w-2xl">
-        Select the department category and describe the incident. Submissions are stored directly in the MySQL database and tracked against municipal SLA standards.
-      </p>
-    </div>
-
-    <!-- Main Two-Column Layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
-      <!-- Left Column: Form (8 Columns) -->
-      <div class="lg:col-span-8 space-y-6">
-        
-        <!-- SECTION 1: Department Category (Loaded from MySQL) -->
-        <div class="bg-surface-lowest p-6 rounded-2xl shadow-sm border border-border/60 space-y-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-              </svg>
-              <h3 class="text-base font-bold text-on-surface">1. Municipal Department & Category <span class="text-error">*</span></h3>
-            </div>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-surface-high text-primary">From MySQL</span>
-          </div>
-          <p class="text-xs text-on-surface-variant">Select the appropriate category below to route to the correct municipal department:</p>
-          
-          <!-- Category Grid Container (Populated dynamically via JS from /api/categories) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="category-cards-container">
-            <div class="p-6 text-center text-sm text-on-surface-variant col-span-2">Loading categories from MySQL...</div>
-          </div>
-        </div>
-
-        <!-- SECTION 2: Description -->
-        <div class="bg-surface-lowest p-6 rounded-2xl shadow-sm border border-border/60 space-y-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-              </svg>
-              <h3 class="text-base font-bold text-on-surface">2. Incident Description <span class="text-error">*</span></h3>
-            </div>
-            <span class="text-xs text-on-surface-variant" id="char-counter">0 / 1000 characters</span>
-          </div>
-
-          <textarea 
-            id="grievance-desc" 
-            rows="4" 
-            maxlength="1000"
-            placeholder="Provide a detailed description of the incident, hazards, and specific details..." 
-            class="w-full p-3.5 bg-surface-low rounded-xl text-sm text-on-surface placeholder:text-gray-400 border border-transparent focus:border-primary focus:bg-surface-lowest focus:outline-none transition-all resize-none shadow-inner"
-          ></textarea>
-
-          <!-- Quick inclusion tags -->
-          <div class="flex flex-wrap items-center gap-2 pt-1" id="guidance-tags">
-            <span class="text-xs text-on-surface-variant font-medium">Quick add:</span>
-            <button type="button" class="text-xs bg-surface-low hover:bg-surface-high text-on-surface px-2.5 py-1 rounded-full transition-colors">+ Road lane direction</button>
-            <button type="button" class="text-xs bg-surface-low hover:bg-surface-high text-on-surface px-2.5 py-1 rounded-full transition-colors">+ Utility pipe exposure</button>
-            <button type="button" class="text-xs bg-surface-low hover:bg-surface-high text-on-surface px-2.5 py-1 rounded-full transition-colors">+ School zone proximity</button>
-          </div>
-        </div>
-
-        <!-- SECTION 3: Location -->
-        <div class="bg-surface-lowest p-6 rounded-2xl shadow-sm border border-border/60 space-y-4">
-          <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            <h3 class="text-base font-bold text-on-surface">3. Incident Location <span class="text-error">*</span></h3>
-          </div>
-
-          <div class="relative">
-            <input 
-              type="text" 
-              id="address-input" 
-              placeholder="e.g. 104 Main Street, opposite City Hospital, Ward 4" 
-              class="w-full h-11 px-3.5 bg-surface-low rounded-xl text-sm text-on-surface placeholder:text-gray-400 border border-transparent focus:border-primary focus:bg-surface-lowest focus:outline-none transition-all shadow-inner"
-            />
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Right Column: Live SLA Details & Submit (4 Columns) -->
-      <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
-        
-        <!-- SLA Mandate Card (Reflects selected MySQL category) -->
-        <div class="bg-surface-lowest p-6 rounded-2xl shadow-sm border border-border/60 space-y-4">
-          <div class="border-b border-border/50 pb-3">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-primary block">MUNICIPAL RESOLUTION MANDATE</span>
-            <h4 class="text-base font-bold text-on-surface mt-0.5">SLA Enforcement Timer</h4>
-          </div>
-
-          <div class="flex items-center gap-4 bg-surface-low p-4 rounded-xl">
-            <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <span id="sla-badge" class="text-lg font-bold text-primary">3d</span>
-            </div>
-            <div>
-              <span class="text-xs text-on-surface-variant uppercase block">Target Resolution SLA</span>
-              <span id="sla-days-text" class="text-sm font-bold text-on-surface block">3 Days Max</span>
-              <span id="sla-target-date" class="text-xs text-emerald-700 font-medium block"></span>
-            </div>
-          </div>
-
-          <div class="space-y-1 text-xs">
-            <span class="text-on-surface-variant font-medium">Assigned Department:</span>
-            <div id="assigned-dept-name" class="p-3 bg-surface-low rounded-lg font-semibold text-primary">
-              Public Works Department
-            </div>
-          </div>
-
-          <div class="pt-2">
-            <label class="flex items-start gap-2.5 cursor-pointer text-xs text-on-surface-variant select-none">
-              <input id="declaration-checkbox" type="checkbox" checked class="mt-0.5 w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" />
-              <span>I confirm that the grievance details and location provided above are accurate and truthful.</span>
-            </label>
-          </div>
-
-          <div class="pt-2">
-            <button 
-              id="submit-ticket-btn" 
-              type="button" 
-              class="w-full h-12 bg-primary hover:bg-primary-container text-white font-semibold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-              </svg>
-              <span>Submit to MySQL Database</span>
-            </button>
-          </div>
-
-          <div id="status-message" class="text-xs text-center min-h-[20px] font-medium"></div>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- LIVE MYSQL DATA SECTION: Recent Grievances from Database -->
-    <div class="bg-surface-lowest p-6 rounded-2xl shadow-sm border border-border/60 space-y-4 mt-8">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-4">
-        <div>
-          <h3 class="text-lg font-bold text-on-surface flex items-center gap-2">
-            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6-4h6m-6 8h4"></path>
-            </svg>
-            Live Grievances from MySQL Database
-          </h3>
-          <p class="text-xs text-on-surface-variant">Real-time records queried directly from the <code class="bg-surface-low px-1.5 py-0.5 rounded font-mono">grievance</code> table.</p>
-        </div>
-        <button id="refresh-grievances-btn" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-low hover:bg-surface-high text-xs font-semibold text-primary rounded-lg transition-colors">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+  <!-- ===== LOGIN PAGE ===== -->
+  <div id="page-login" class="flex-1 flex items-center justify-center p-4 fade-in">
+    <div class="w-full max-w-sm">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
           </svg>
-          Refresh Data
-        </button>
+        </div>
+        <h2 class="text-2xl font-bold text-on-surface">Welcome Back</h2>
+        <p class="text-sm text-on-surface-muted mt-1">Sign in to the GrievanceTrack Portal</p>
       </div>
 
-      <!-- Grievance Table Container -->
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="bg-surface-low text-on-surface-variant uppercase text-[11px] font-semibold border-b border-border">
-              <th class="py-3 px-4">Ticket ID</th>
-              <th class="py-3 px-4">Department / Category</th>
-              <th class="py-3 px-4">Description</th>
-              <th class="py-3 px-4">Location</th>
-              <th class="py-3 px-4">Status</th>
-              <th class="py-3 px-4">Created Date</th>
-            </tr>
-          </thead>
-          <tbody id="grievance-table-body" class="divide-y divide-border/60">
-            <tr>
-              <td colspan="6" class="py-6 text-center text-on-surface-variant">Loading records from MySQL...</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="bg-surface-card rounded-2xl shadow-md border border-border p-6 space-y-4">
+        <!-- Quick fill buttons -->
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="quickFill('citizen','citizen123')"
+            class="py-2 px-3 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors">
+            👤 Fill Citizen
+          </button>
+          <button onclick="quickFill('senior','senior123')"
+            class="py-2 px-3 rounded-lg text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition-colors">
+            🛡️ Fill Senior Officer
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-muted mb-1">Username</label>
+            <input id="login-username" type="text" placeholder="citizen or senior"
+              class="w-full h-10 px-3 rounded-lg border border-border bg-surface text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-muted mb-1">Password</label>
+            <input id="login-password" type="password" placeholder="••••••••"
+              class="w-full h-10 px-3 rounded-lg border border-border bg-surface text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"/>
+          </div>
+        </div>
+
+        <button onclick="doLogin()"
+          class="w-full h-11 bg-primary hover:bg-primary-dark text-white font-semibold text-sm rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14"/>
+          </svg>
+          Sign In
+        </button>
+        <div id="login-error" class="text-xs text-center text-danger font-medium hidden"></div>
+      </div>
+
+      <div class="mt-4 p-3 bg-surface-card rounded-xl border border-border text-xs text-on-surface-muted space-y-1">
+        <p class="font-semibold text-on-surface">Default Credentials:</p>
+        <p>🧑 <strong>citizen</strong> / citizen123 → File & track complaints</p>
+        <p>🛡️ <strong>senior</strong> / senior123 → View escalated grievances</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CITIZEN DASHBOARD ===== -->
+  <div id="page-citizen" class="hidden flex-1 fade-in">
+    <!-- Tab Navigation -->
+    <div class="bg-surface-card border-b border-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex gap-0">
+          <button onclick="citizenTab('file')" id="tab-file"
+            class="citizen-tab px-5 py-4 text-sm font-semibold border-b-2 border-primary text-primary transition-colors">
+            📝 File New Grievance
+          </button>
+          <button onclick="citizenTab('my')" id="tab-my"
+            class="citizen-tab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-on-surface-muted hover:text-on-surface transition-colors">
+            📋 My Complaints & Status
+          </button>
+        </div>
       </div>
     </div>
 
-  </main>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
-  <footer class="bg-surface-lowest border-t border-border mt-12 py-6 text-center text-xs text-on-surface-variant">
-    <p>© 2026 Metropolitan Municipal Corporation. GrievanceTrack Portal connected to MySQL.</p>
+      <!-- ---- FILE NEW GRIEVANCE TAB ---- -->
+      <div id="panel-file" class="space-y-6">
+        <div>
+          <h2 class="text-2xl font-bold text-on-surface">File an Official Grievance</h2>
+          <p class="text-sm text-on-surface-muted mt-1">Select a category and describe the incident. Your complaint will be tracked with an SLA timer.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Left Form -->
+          <div class="lg:col-span-8 space-y-5">
+
+            <!-- Category Selection -->
+            <div class="bg-surface-card p-6 rounded-2xl border border-border shadow-sm space-y-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-on-surface">1. Municipal Department & Issue Category <span class="text-danger">*</span></h3>
+                <span class="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">Mandatory</span>
+              </div>
+              <p class="text-xs text-on-surface-muted">Selecting the accurate category directly engages the department's response fleet and SLA clock.</p>
+              <div id="category-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="col-span-2 py-6 text-center text-sm text-on-surface-muted">Loading categories from MySQL...</div>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="bg-surface-card p-6 rounded-2xl border border-border shadow-sm space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-on-surface">2. Incident Description <span class="text-danger">*</span></h3>
+                <span id="char-counter" class="text-xs text-on-surface-muted">0 / 1000</span>
+              </div>
+              <textarea id="grievance-desc" rows="4" maxlength="1000"
+                placeholder="Describe the incident, hazards, and specific details..."
+                class="w-full p-3 bg-surface rounded-xl text-sm border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all resize-none"></textarea>
+              <div class="flex flex-wrap gap-2">
+                <span class="text-xs text-on-surface-muted font-medium">Quick add:</span>
+                <button type="button" onclick="addTag('Road lane direction')" class="text-xs bg-surface hover:bg-blue-50 text-on-surface-muted px-2.5 py-1 rounded-full border border-border transition-colors">+ Road lane direction</button>
+                <button type="button" onclick="addTag('Utility pipe exposure')" class="text-xs bg-surface hover:bg-blue-50 text-on-surface-muted px-2.5 py-1 rounded-full border border-border transition-colors">+ Utility pipe exposure</button>
+                <button type="button" onclick="addTag('School zone proximity')" class="text-xs bg-surface hover:bg-blue-50 text-on-surface-muted px-2.5 py-1 rounded-full border border-border transition-colors">+ School zone proximity</button>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="bg-surface-card p-6 rounded-2xl border border-border shadow-sm space-y-3">
+              <h3 class="text-sm font-bold text-on-surface">3. Incident Location <span class="text-danger">*</span></h3>
+              <input type="text" id="address-input" placeholder="e.g. 104 Main Street, opposite City Hospital, Ward 4"
+                class="w-full h-11 px-3 rounded-xl border border-border bg-surface text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all"/>
+            </div>
+
+          </div>
+
+          <!-- Right Sidebar -->
+          <div class="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
+            <div class="bg-surface-card p-6 rounded-2xl border border-border shadow-sm space-y-4">
+              <div class="border-b border-border pb-3">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-primary block">Resolution Mandate</span>
+                <h4 class="text-base font-bold text-on-surface mt-0.5">SLA Enforcement Timer</h4>
+              </div>
+
+              <div class="flex items-center gap-4 bg-blue-50 p-4 rounded-xl">
+                <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <span id="sla-badge" class="text-lg font-bold text-primary">3d</span>
+                </div>
+                <div>
+                  <span class="text-xs text-on-surface-muted uppercase block">Target Resolution SLA</span>
+                  <span id="sla-days-text" class="text-sm font-bold text-on-surface block">3 Days Max</span>
+                  <span id="sla-target-date" class="text-xs text-success font-medium block"></span>
+                </div>
+              </div>
+
+              <div class="space-y-1 text-xs">
+                <span class="text-on-surface-muted font-medium">Assigned Department:</span>
+                <div id="assigned-dept-name" class="p-3 bg-surface rounded-lg font-semibold text-primary border border-border">
+                  Select a category →
+                </div>
+              </div>
+
+              <label class="flex items-start gap-2.5 cursor-pointer text-xs text-on-surface-muted select-none">
+                <input id="declaration-checkbox" type="checkbox" checked class="mt-0.5 w-4 h-4 rounded text-primary cursor-pointer"/>
+                <span>I confirm that the grievance details and location provided are accurate and truthful.</span>
+              </label>
+
+              <button id="submit-ticket-btn" type="button" onclick="submitGrievance()"
+                class="w-full h-12 bg-primary hover:bg-primary-dark text-white font-semibold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 active:scale-[0.99]">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                </svg>
+                <span>Submit to MySQL Database</span>
+              </button>
+              <div id="submit-status" class="text-xs text-center min-h-[18px] font-medium"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- MY COMPLAINTS TAB ---- -->
+      <div id="panel-my" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-on-surface">My Complaints & Status</h2>
+            <p class="text-sm text-on-surface-muted mt-1">All grievances you have filed. Rate resolved ones using the ⭐ widget.</p>
+          </div>
+          <button onclick="loadMyGrievances()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-card border border-border rounded-lg text-xs font-semibold text-primary hover:bg-surface transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="bg-surface-card rounded-2xl border border-border shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-surface text-on-surface-muted uppercase text-[11px] font-semibold">
+                  <th class="py-3 px-4">#</th>
+                  <th class="py-3 px-4">Category</th>
+                  <th class="py-3 px-4">Description</th>
+                  <th class="py-3 px-4">Location</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4">Filed On</th>
+                  <th class="py-3 px-4">SLA Deadline</th>
+                  <th class="py-3 px-4">Rating</th>
+                </tr>
+              </thead>
+              <tbody id="my-grievances-tbody" class="divide-y divide-border">
+                <tr><td colspan="8" class="py-8 text-center text-on-surface-muted">Loading your complaints...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ===== SENIOR OFFICER DASHBOARD ===== -->
+  <div id="page-senior" class="hidden flex-1 fade-in">
+    <div class="bg-surface-card border-b border-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex gap-0">
+          <button onclick="seniorTab('escalated')" id="tab-escalated"
+            class="senior-tab px-5 py-4 text-sm font-semibold border-b-2 border-danger text-danger transition-colors">
+            🚨 Escalated Grievances
+          </button>
+          <button onclick="seniorTab('all')" id="tab-all"
+            class="senior-tab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-on-surface-muted hover:text-on-surface transition-colors">
+            📊 All Grievances
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+      <!-- ---- ESCALATED TAB ---- -->
+      <div id="panel-escalated" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-on-surface">🚨 Escalated Grievances</h2>
+            <p class="text-sm text-on-surface-muted mt-1">Grievances that breached SLA and were auto-escalated. Take action below.</p>
+          </div>
+          <button onclick="loadEscalated()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-card border border-border rounded-lg text-xs font-semibold text-danger hover:bg-red-50 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+        <div id="escalated-stats" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+        <div class="bg-surface-card rounded-2xl border border-border shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-red-50 text-on-surface-muted uppercase text-[11px] font-semibold">
+                  <th class="py-3 px-4">#</th>
+                  <th class="py-3 px-4">Citizen</th>
+                  <th class="py-3 px-4">Category / Dept</th>
+                  <th class="py-3 px-4">Description</th>
+                  <th class="py-3 px-4">Location</th>
+                  <th class="py-3 px-4">Filed On</th>
+                  <th class="py-3 px-4">Overdue</th>
+                  <th class="py-3 px-4">Action</th>
+                </tr>
+              </thead>
+              <tbody id="escalated-tbody" class="divide-y divide-border">
+                <tr><td colspan="8" class="py-8 text-center text-on-surface-muted">Loading escalated grievances...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- ALL GRIEVANCES TAB ---- -->
+      <div id="panel-all" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-on-surface">📊 All Grievances</h2>
+            <p class="text-sm text-on-surface-muted mt-1">Full overview. Update status directly from the table.</p>
+          </div>
+          <button onclick="loadAllGrievances()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-card border border-border rounded-lg text-xs font-semibold text-primary hover:bg-surface transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+        <div class="bg-surface-card rounded-2xl border border-border shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-surface text-on-surface-muted uppercase text-[11px] font-semibold">
+                  <th class="py-3 px-4">#</th>
+                  <th class="py-3 px-4">Citizen</th>
+                  <th class="py-3 px-4">Category</th>
+                  <th class="py-3 px-4">Description</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4">Filed On</th>
+                  <th class="py-3 px-4">Rating</th>
+                  <th class="py-3 px-4">Update Status</th>
+                </tr>
+              </thead>
+              <tbody id="all-grievances-tbody" class="divide-y divide-border">
+                <tr><td colspan="8" class="py-8 text-center text-on-surface-muted">Loading all grievances...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="bg-surface-card border-t border-border py-5 text-center text-xs text-on-surface-muted">
+    © 2026 Municipal Corporation · GrievanceTrack Portal · Connected to MySQL
   </footer>
 
-  <!-- Clean, Fully Connected JavaScript Logic -->
+  <!-- ===== JAVASCRIPT ===== -->
   <script>
+    // ─── State ───────────────────────────────────────────────────────────────
+    let currentUser   = null;   // { id, username, fullName, role }
     let categoriesList = [];
-    let selectedCategoryId = 1;
+    let selectedCategoryId = null;
 
-    document.addEventListener('DOMContentLoaded', function() {
-      // 1. Fetch categories from MySQL on load
-      loadCategories();
+    // ─── Helpers ─────────────────────────────────────────────────────────────
+    function showPage(id) {
+      ['page-login','page-citizen','page-senior'].forEach(p => {
+        const el = document.getElementById(p);
+        if (el.id === id) { el.classList.remove('hidden'); el.classList.add('flex','flex-col'); }
+        else              { el.classList.add('hidden'); el.classList.remove('flex','flex-col'); }
+      });
+    }
 
-      // 2. Fetch existing grievances from MySQL on load
-      loadGrievances();
+    function statusBadge(s) {
+      const map = {
+        OPEN:        'bg-blue-100 text-blue-800',
+        IN_PROGRESS: 'bg-amber-100 text-amber-800',
+        RESOLVED:    'bg-green-100 text-green-700',
+        ESCALATED:   'bg-red-100 text-red-800 font-bold animate-pulse'
+      };
+      return `<span class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold ${map[s]||'bg-gray-100 text-gray-800'}">${s}</span>`;
+    }
 
-      // 3. Setup Character Counter
-      const descEl = document.getElementById('grievance-desc');
-      const counterEl = document.getElementById('char-counter');
-      if (descEl && counterEl) {
-        descEl.addEventListener('input', () => {
-          counterEl.textContent = `${descEl.value.length} / 1000 characters`;
+    function fmtDate(dt) {
+      if (!dt) return 'N/A';
+      return new Date(dt).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    }
+
+    function slaDeadline(createdAt, slaDays) {
+      if (!createdAt) return '—';
+      const d = new Date(createdAt);
+      d.setDate(d.getDate() + slaDays);
+      const now = new Date();
+      const overdue = now > d;
+      const txt = d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+      return overdue
+        ? `<span class="text-danger font-semibold">${txt} ⚠ Overdue</span>`
+        : `<span class="text-success">${txt}</span>`;
+    }
+
+    function overdueDays(createdAt, slaDays) {
+      const d = new Date(createdAt);
+      d.setDate(d.getDate() + slaDays);
+      const days = Math.floor((new Date() - d) / 86400000);
+      return days > 0 ? `<span class="text-danger font-bold">+${days} days</span>` : `<span class="text-success">Within SLA</span>`;
+    }
+
+    // ─── Login ────────────────────────────────────────────────────────────────
+    function quickFill(u, p) {
+      document.getElementById('login-username').value = u;
+      document.getElementById('login-password').value = p;
+    }
+
+    async function doLogin() {
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errEl    = document.getElementById('login-error');
+      errEl.classList.add('hidden'); errEl.textContent = '';
+
+      if (!username || !password) { errEl.textContent = 'Please enter username and password.'; errEl.classList.remove('hidden'); return; }
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
         });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error || 'Login failed'; errEl.classList.remove('hidden'); return; }
+
+        currentUser = data;  // { id, username, fullName, role }
+
+        // Update nav
+        const navUser = document.getElementById('nav-user');
+        const navBadge = document.getElementById('nav-badge');
+        navUser.classList.remove('hidden'); navUser.classList.add('flex');
+        const icon = currentUser.role === 'SENIOR_OFFICER' ? '🛡️' : '👤';
+        const roleLabel = currentUser.role === 'SENIOR_OFFICER' ? 'Senior Officer' : 'Citizen';
+        navBadge.innerHTML = `<span>${icon}</span><span class="font-semibold">${currentUser.fullName}</span><span class="text-on-surface-muted">(${roleLabel})</span>`;
+
+        if (currentUser.role === 'SENIOR_OFFICER') {
+          showPage('page-senior');
+          loadEscalated();
+        } else {
+          showPage('page-citizen');
+          loadCategories();
+          citizenTab('file');
+        }
+      } catch (e) {
+        errEl.textContent = 'Connection error: ' + e.message;
+        errEl.classList.remove('hidden');
       }
+    }
 
-      // 4. Quick inclusion tags
-      const guidanceTags = document.getElementById('guidance-tags');
-      if (guidanceTags && descEl) {
-        guidanceTags.querySelectorAll('button').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const textToAdd = btn.innerText.replace('+', '').trim();
-            descEl.value += (descEl.value.length > 0 ? ' ' : '') + textToAdd;
-            descEl.dispatchEvent(new Event('input'));
-          });
-        });
-      }
+    function logout() {
+      currentUser = null;
+      categoriesList = [];
+      selectedCategoryId = null;
+      document.getElementById('nav-user').classList.add('hidden');
+      document.getElementById('nav-user').classList.remove('flex');
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+      showPage('page-login');
+    }
 
-      // 5. Declaration Checkbox toggles submit button
-      const submitBtn = document.getElementById('submit-ticket-btn');
-      const checkbox = document.getElementById('declaration-checkbox');
-      if (checkbox && submitBtn) {
-        checkbox.addEventListener('change', (e) => {
-          submitBtn.disabled = !e.target.checked;
-          if (!e.target.checked) {
-            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-          } else {
-            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-          }
-        });
-      }
-
-      // 6. Manual Refresh button
-      const refreshBtn = document.getElementById('refresh-grievances-btn');
-      if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => {
-          loadGrievances();
-        });
-      }
-
-      // 7. Form Submission to Spring Boot / MySQL API
-      if (submitBtn) {
-        submitBtn.addEventListener('click', async () => {
-          const desc = document.getElementById('grievance-desc').value.trim();
-          const location = document.getElementById('address-input').value.trim();
-          const statusMsg = document.getElementById('status-message');
-
-          if (!desc) {
-            alert('Please enter a description for the grievance.');
-            document.getElementById('grievance-desc').focus();
-            return;
-          }
-
-          if (!location) {
-            alert('Please enter the location of the incident.');
-            document.getElementById('address-input').focus();
-            return;
-          }
-
-          submitBtn.disabled = true;
-          submitBtn.innerHTML = `
-            <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Saving to MySQL...</span>
-          `;
-          statusMsg.textContent = '';
-
-          try {
-            const response = await fetch('/api/grievances', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                categoryId: selectedCategoryId,
-                description: desc,
-                location: location
-              })
-            });
-
-            if (!response.ok) {
-              const errData = await response.json().catch(() => ({}));
-              throw new Error(errData.error || errData.message || 'Submission failed');
-            }
-
-            const savedGrievance = await response.json();
-            
-            // Clear inputs
-            document.getElementById('grievance-desc').value = '';
-            document.getElementById('address-input').value = '';
-            descEl.dispatchEvent(new Event('input'));
-
-            statusMsg.className = 'text-xs text-center font-semibold text-emerald-700';
-            statusMsg.textContent = `✓ Grievance #${savedGrievance.id} successfully saved to MySQL database!`;
-
-            // Reload grievances table to show the new record
-            loadGrievances();
-
-          } catch (err) {
-            statusMsg.className = 'text-xs text-center font-semibold text-error';
-            statusMsg.textContent = `✗ Error: ${err.message}`;
-          } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-              </svg>
-              <span>Submit to MySQL Database</span>
-            `;
-          }
-        });
-      }
+    // Allow Enter key to login
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !document.getElementById('page-login').classList.contains('hidden')) doLogin();
     });
 
-    // Fetch and render categories from MySQL
+    // ─── Citizen: Tab switching ───────────────────────────────────────────────
+    function citizenTab(tab) {
+      ['file','my'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        const panel = document.getElementById(`panel-${t}`);
+        if (t === tab) {
+          btn.classList.add('border-primary','text-primary'); btn.classList.remove('border-transparent','text-on-surface-muted');
+          panel.classList.remove('hidden');
+        } else {
+          btn.classList.remove('border-primary','text-primary'); btn.classList.add('border-transparent','text-on-surface-muted');
+          panel.classList.add('hidden');
+        }
+      });
+      if (tab === 'my') loadMyGrievances();
+    }
+
+    // ─── Citizen: Categories ──────────────────────────────────────────────────
     async function loadCategories() {
       const container = document.getElementById('category-cards-container');
       try {
         const res = await fetch('/api/categories');
         if (!res.ok) throw new Error('Failed to load categories');
         categoriesList = await res.json();
-
-        if (!categoriesList || categoriesList.length === 0) {
-          container.innerHTML = '<div class="p-4 text-xs text-on-surface-variant col-span-2">No categories found in database.</div>';
-          return;
-        }
+        if (!categoriesList.length) { container.innerHTML = '<div class="col-span-2 py-4 text-center text-xs text-on-surface-muted">No categories in database.</div>'; return; }
 
         container.innerHTML = '';
-        categoriesList.forEach((cat, index) => {
-          const isSelected = index === 0;
-          if (isSelected) {
-            selectedCategoryId = cat.id;
-            updateSlaSidebar(cat);
-          }
+        categoriesList.forEach((cat, i) => {
+          const isFirst = i === 0;
+          if (isFirst) { selectedCategoryId = cat.id; updateSlaSidebar(cat); }
 
           const card = document.createElement('div');
-          card.className = `p-4 rounded-xl border transition-all cursor-pointer relative ${
-            isSelected 
-              ? 'border-primary ring-2 ring-primary/20 bg-surface-low shadow-sm' 
-              : 'border-border bg-surface-lowest hover:border-primary/50'
-          }`;
+          card.className = `p-4 rounded-xl border-2 transition-all cursor-pointer ${isFirst ? 'border-primary bg-blue-50 shadow-sm' : 'border-border bg-surface-card hover:border-primary/50'}`;
           card.setAttribute('data-id', cat.id);
-
-          const deptName = cat.department ? cat.department.name : 'Municipal Department';
-
+          const dept = cat.department ? cat.department.name : 'Municipal Dept';
+          const slaColor = cat.slaDays === 1 ? 'bg-orange-100 text-orange-700' : cat.slaDays <= 2 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700';
           card.innerHTML = `
             <div class="flex items-start gap-3">
-              <div class="w-9 h-9 rounded-lg ${isSelected ? 'bg-primary text-white' : 'bg-surface-high text-primary'} flex items-center justify-center flex-shrink-0 font-bold text-xs">
-                ${cat.id}
-              </div>
+              <div class="w-10 h-10 rounded-lg ${isFirst ? 'bg-primary text-white' : 'bg-surface text-primary border border-border'} flex items-center justify-center flex-shrink-0 font-bold text-sm">${cat.id}</div>
               <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-bold text-on-surface truncate">${cat.name}</h4>
-                <p class="text-xs text-on-surface-variant truncate">${deptName}</p>
+                <h4 class="text-sm font-bold text-on-surface">${cat.name}</h4>
+                <p class="text-xs text-on-surface-muted mt-0.5">Auto-routes to ${dept}</p>
                 <div class="mt-2 flex items-center gap-2">
-                  <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                    ${cat.slaDays} Days SLA
-                  </span>
+                  <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full ${slaColor}">${cat.slaDays} Day${cat.slaDays>1?'s':''} Max SLA</span>
+                  <span class="text-[11px] text-on-surface-muted">· Code ${100 + cat.id * 101 - 1}</span>
                 </div>
               </div>
-            </div>
-          `;
-
+            </div>`;
           card.addEventListener('click', () => {
             selectedCategoryId = cat.id;
             updateSlaSidebar(cat);
-            // Update selected styling
             document.querySelectorAll('#category-cards-container > div').forEach(c => {
-              c.className = 'p-4 rounded-xl border transition-all cursor-pointer border-border bg-surface-lowest hover:border-primary/50';
-              const iconBox = c.querySelector('.w-9');
-              if (iconBox) iconBox.className = 'w-9 h-9 rounded-lg bg-surface-high text-primary flex items-center justify-center flex-shrink-0 font-bold text-xs';
+              c.className = 'p-4 rounded-xl border-2 transition-all cursor-pointer border-border bg-surface-card hover:border-primary/50';
+              c.querySelector('[class*="w-10"]').className = 'w-10 h-10 rounded-lg bg-surface text-primary border border-border flex items-center justify-center flex-shrink-0 font-bold text-sm';
             });
-            card.className = 'p-4 rounded-xl border transition-all cursor-pointer border-primary ring-2 ring-primary/20 bg-surface-low shadow-sm';
-            const activeIconBox = card.querySelector('.w-9');
-            if (activeIconBox) activeIconBox.className = 'w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center flex-shrink-0 font-bold text-xs';
+            card.className = 'p-4 rounded-xl border-2 transition-all cursor-pointer border-primary bg-blue-50 shadow-sm';
+            card.querySelector('[class*="w-10"]').className = 'w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center flex-shrink-0 font-bold text-sm';
           });
-
           container.appendChild(card);
         });
-
-      } catch (err) {
-        console.error(err);
-        container.innerHTML = `<div class="p-4 text-xs text-error col-span-2">Could not load categories: ${err.message}</div>`;
+      } catch (e) {
+        container.innerHTML = `<div class="col-span-2 py-4 text-xs text-danger">Error: ${e.message}</div>`;
       }
     }
 
-    // Update the right-hand SLA sidebar based on selected category
-    function updateSlaSidebar(category) {
-      const slaBadge = document.getElementById('sla-badge');
-      const slaDaysText = document.getElementById('sla-days-text');
-      const slaTargetDate = document.getElementById('sla-target-date');
-      const assignedDept = document.getElementById('assigned-dept-name');
-
-      const slaDays = category.slaDays || 3;
-      if (slaBadge) slaBadge.textContent = `${slaDays}d`;
-      if (slaDaysText) slaDaysText.textContent = `${slaDays} Days Max SLA`;
-
-      // Calculate future target date
-      const target = new Date();
-      target.setDate(target.getDate() + slaDays);
-      const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-      if (slaTargetDate) slaTargetDate.textContent = `Target: ${target.toLocaleDateString(undefined, options)}`;
-
-      const deptName = category.department ? category.department.name : 'Municipal Department';
-      if (assignedDept) assignedDept.textContent = deptName;
+    function updateSlaSidebar(cat) {
+      const slaDays = cat.slaDays || 3;
+      document.getElementById('sla-badge').textContent     = `${slaDays}d`;
+      document.getElementById('sla-days-text').textContent = `${slaDays} Day${slaDays>1?'s':''} Max SLA`;
+      const target = new Date(); target.setDate(target.getDate() + slaDays);
+      document.getElementById('sla-target-date').textContent = `Target: ${target.toLocaleDateString('en-IN', {day:'2-digit',month:'short'})}`;
+      const dept = cat.department ? cat.department.name : 'Municipal Dept';
+      document.getElementById('assigned-dept-name').textContent = dept;
     }
 
-    // Fetch and render real grievances from MySQL database
-    async function loadGrievances() {
-      const tbody = document.getElementById('grievance-table-body');
-      try {
-        const res = await fetch('/api/grievances?size=15&sortBy=createdAt');
-        if (!res.ok) throw new Error('Failed to load grievances from database');
-        const data = await res.json();
-        const grievances = data.content || [];
+    function addTag(text) {
+      const el = document.getElementById('grievance-desc');
+      el.value += (el.value.length > 0 ? ' ' : '') + text;
+      document.getElementById('char-counter').textContent = `${el.value.length} / 1000`;
+    }
 
-        if (grievances.length === 0) {
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="6" class="py-6 text-center text-on-surface-variant">No grievances in database yet. Submit one above!</td>
-            </tr>
-          `;
-          return;
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+      const descEl = document.getElementById('grievance-desc');
+      if (descEl) descEl.addEventListener('input', () => {
+        document.getElementById('char-counter').textContent = `${descEl.value.length} / 1000`;
+      });
+    });
+
+    // ─── Citizen: Submit grievance ────────────────────────────────────────────
+    async function submitGrievance() {
+      const desc     = document.getElementById('grievance-desc').value.trim();
+      const location = document.getElementById('address-input').value.trim();
+      const statusEl = document.getElementById('submit-status');
+      const btn      = document.getElementById('submit-ticket-btn');
+
+      statusEl.textContent = ''; statusEl.className = 'text-xs text-center min-h-[18px] font-medium';
+
+      if (!selectedCategoryId) { alert('Please select a category.'); return; }
+      if (!desc)               { alert('Please enter a description.'); return; }
+      if (!location)           { alert('Please enter the location.'); return; }
+      if (!document.getElementById('declaration-checkbox').checked) { alert('Please check the declaration checkbox.'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = `<svg class="w-4 h-4 spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg><span>Saving...</span>`;
+
+      try {
+        const res = await fetch('/api/grievances', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            categoryId:      selectedCategoryId,
+            description:     desc,
+            location:        location,
+            citizenUsername: currentUser.username
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || data.error || 'Submission failed');
+
+        document.getElementById('grievance-desc').value = '';
+        document.getElementById('address-input').value = '';
+        document.getElementById('char-counter').textContent = '0 / 1000';
+        statusEl.className = 'text-xs text-center min-h-[18px] font-medium text-success';
+        statusEl.textContent = `✓ Grievance #${data.id} filed successfully!`;
+      } catch (e) {
+        statusEl.className = 'text-xs text-center min-h-[18px] font-medium text-danger';
+        statusEl.textContent = `✗ Error: ${e.message}`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg><span>Submit to MySQL Database</span>`;
+      }
+    }
+
+    // ─── Citizen: My Complaints ───────────────────────────────────────────────
+    async function loadMyGrievances() {
+      const tbody = document.getElementById('my-grievances-tbody');
+      tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-on-surface-muted">Loading...</td></tr>`;
+      try {
+        const res = await fetch(`/api/grievances/my?username=${encodeURIComponent(currentUser.username)}&size=50`);
+        if (!res.ok) throw new Error('Failed to load grievances');
+        const data = await res.json();
+        const list = data.content || [];
+
+        if (!list.length) { tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-on-surface-muted">No complaints filed yet. Go to "File New Grievance" to submit one.</td></tr>`; return; }
 
         tbody.innerHTML = '';
-        grievances.forEach(g => {
+        list.forEach(g => {
           const tr = document.createElement('tr');
-          tr.className = 'hover:bg-surface-low/50 transition-colors';
-
-          let statusBadgeClass = 'bg-gray-100 text-gray-800';
-          if (g.status === 'OPEN') statusBadgeClass = 'bg-blue-100 text-blue-800';
-          else if (g.status === 'IN_PROGRESS') statusBadgeClass = 'bg-amber-100 text-amber-800';
-          else if (g.status === 'RESOLVED') statusBadgeClass = 'bg-emerald-100 text-emerald-800';
-          else if (g.status === 'ESCALATED') statusBadgeClass = 'bg-rose-100 text-rose-800 font-bold animate-pulse';
-
-          const catName = g.category ? g.category.name : 'General';
-          const formattedDate = g.createdAt ? new Date(g.createdAt).toLocaleString() : 'N/A';
+          tr.className = 'hover:bg-surface/50 transition-colors';
+          const slaDays = g.category?.slaDays || 3;
+          const ratingCell = g.status === 'RESOLVED'
+            ? (g.rating
+                ? `<span class="text-amber-500 font-bold">${'⭐'.repeat(g.rating)}</span>`
+                : `<div class="flex gap-0.5" id="stars-${g.id}">${[1,2,3,4,5].map(n=>`<button onclick="rateGrievance(${g.id},${n})" title="Rate ${n}" class="text-gray-300 hover:text-amber-400 transition-colors text-lg leading-none">★</button>`).join('')}</div>`)
+            : `<span class="text-on-surface-muted">—</span>`;
 
           tr.innerHTML = `
             <td class="py-3 px-4 font-mono font-semibold text-primary">#${g.id}</td>
-            <td class="py-3 px-4 font-medium text-on-surface">${catName}</td>
-            <td class="py-3 px-4 text-on-surface-variant max-w-xs truncate" title="${g.description || ''}">${g.description || '-'}</td>
-            <td class="py-3 px-4 text-on-surface-variant max-w-[160px] truncate" title="${g.location || ''}">${g.location || '-'}</td>
-            <td class="py-3 px-4">
-              <span class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold ${statusBadgeClass}">
-                ${g.status}
-              </span>
-            </td>
-            <td class="py-3 px-4 text-on-surface-variant">${formattedDate}</td>
-          `;
-
+            <td class="py-3 px-4 font-medium">${g.category?.name || '—'}</td>
+            <td class="py-3 px-4 text-on-surface-muted max-w-xs truncate" title="${g.description||''}">${g.description||'—'}</td>
+            <td class="py-3 px-4 text-on-surface-muted max-w-[140px] truncate" title="${g.location||''}">${g.location||'—'}</td>
+            <td class="py-3 px-4">${statusBadge(g.status)}</td>
+            <td class="py-3 px-4 text-on-surface-muted">${fmtDate(g.createdAt)}</td>
+            <td class="py-3 px-4">${slaDeadline(g.createdAt, slaDays)}</td>
+            <td class="py-3 px-4" id="rating-cell-${g.id}">${ratingCell}</td>`;
           tbody.appendChild(tr);
         });
-
-      } catch (err) {
-        console.error(err);
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="6" class="py-4 text-center text-error font-medium">Failed to query MySQL: ${err.message}</td>
-          </tr>
-        `;
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-4 text-center text-danger font-medium">Error: ${e.message}</td></tr>`;
       }
+    }
+
+    async function rateGrievance(id, rating) {
+      try {
+        const res = await fetch(`/api/grievances/${id}/rate?rating=${rating}`, { method: 'POST' });
+        if (!res.ok) { const d = await res.json(); throw new Error(d.message || 'Rating failed'); }
+        const cell = document.getElementById(`rating-cell-${id}`);
+        if (cell) cell.innerHTML = `<span class="text-amber-500 font-bold">${'⭐'.repeat(rating)}</span>`;
+      } catch(e) { alert('Rating error: ' + e.message); }
+    }
+
+    // ─── Senior Officer: Tab switching ───────────────────────────────────────
+    function seniorTab(tab) {
+      ['escalated','all'].forEach(t => {
+        const btn   = document.getElementById(`tab-${t}`);
+        const panel = document.getElementById(`panel-${t}`);
+        if (t === tab) {
+          btn.classList.add('border-danger','text-danger'); btn.classList.remove('border-transparent','text-on-surface-muted');
+          panel.classList.remove('hidden');
+        } else {
+          btn.classList.remove('border-danger','text-danger'); btn.classList.add('border-transparent','text-on-surface-muted');
+          panel.classList.add('hidden');
+        }
+      });
+      if (tab === 'all') loadAllGrievances();
+    }
+
+    // ─── Senior Officer: Escalated Grievances ────────────────────────────────
+    async function loadEscalated() {
+      const tbody = document.getElementById('escalated-tbody');
+      tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-on-surface-muted">Loading...</td></tr>`;
+      try {
+        const res = await fetch('/api/grievances/escalated?size=50');
+        if (!res.ok) throw new Error('Failed to fetch escalated grievances');
+        const data = await res.json();
+        const list = data.content || [];
+
+        // Stats
+        document.getElementById('escalated-stats').innerHTML = `
+          <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-danger">${list.length}</div>
+            <div class="text-xs text-on-surface-muted mt-1">Escalated Total</div>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-warning">${list.filter(g=>!g.rating).length}</div>
+            <div class="text-xs text-on-surface-muted mt-1">Awaiting Resolution</div>
+          </div>
+          <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-success">${list.filter(g=>g.rating).length}</div>
+            <div class="text-xs text-on-surface-muted mt-1">Rated by Citizen</div>
+          </div>`;
+
+        if (!list.length) { tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-on-surface-muted">No escalated grievances. All clear! ✅</td></tr>`; return; }
+
+        tbody.innerHTML = '';
+        list.forEach(g => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-red-50/30 transition-colors';
+          const slaDays = g.category?.slaDays || 3;
+          const citizen = g.citizen ? g.citizen.fullName || g.citizen.username : '—';
+          tr.innerHTML = `
+            <td class="py-3 px-4 font-mono font-semibold text-danger">#${g.id}</td>
+            <td class="py-3 px-4 font-medium">${citizen}</td>
+            <td class="py-3 px-4">
+              <div class="font-semibold text-on-surface">${g.category?.name||'—'}</div>
+              <div class="text-on-surface-muted text-[11px]">${g.category?.department?.name||''}</div>
+            </td>
+            <td class="py-3 px-4 text-on-surface-muted max-w-xs truncate" title="${g.description||''}">${g.description||'—'}</td>
+            <td class="py-3 px-4 text-on-surface-muted max-w-[130px] truncate">${g.location||'—'}</td>
+            <td class="py-3 px-4 text-on-surface-muted">${fmtDate(g.createdAt)}</td>
+            <td class="py-3 px-4">${overdueDays(g.createdAt, slaDays)}</td>
+            <td class="py-3 px-4">
+              <select onchange="updateStatus(${g.id}, this.value, this)"
+                class="text-xs border border-border rounded-lg px-2 py-1.5 bg-surface focus:outline-none focus:border-primary cursor-pointer">
+                <option value="">— Action —</option>
+                <option value="IN_PROGRESS">▶ In Progress</option>
+                <option value="RESOLVED">✓ Resolve</option>
+              </select>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-4 text-center text-danger font-medium">Error: ${e.message}</td></tr>`;
+      }
+    }
+
+    // ─── Senior Officer: All Grievances ──────────────────────────────────────
+    async function loadAllGrievances() {
+      const tbody = document.getElementById('all-grievances-tbody');
+      tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-on-surface-muted">Loading...</td></tr>`;
+      try {
+        const res = await fetch('/api/grievances?size=50&sortBy=createdAt');
+        if (!res.ok) throw new Error('Failed to fetch grievances');
+        const data = await res.json();
+        const list = data.content || [];
+
+        if (!list.length) { tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-on-surface-muted">No grievances in database.</td></tr>`; return; }
+
+        tbody.innerHTML = '';
+        list.forEach(g => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-surface/50 transition-colors';
+          const citizen = g.citizen ? g.citizen.fullName || g.citizen.username : '—';
+          tr.innerHTML = `
+            <td class="py-3 px-4 font-mono font-semibold text-primary">#${g.id}</td>
+            <td class="py-3 px-4 font-medium">${citizen}</td>
+            <td class="py-3 px-4">${g.category?.name||'—'}</td>
+            <td class="py-3 px-4 text-on-surface-muted max-w-xs truncate" title="${g.description||''}">${g.description||'—'}</td>
+            <td class="py-3 px-4">${statusBadge(g.status)}</td>
+            <td class="py-3 px-4 text-on-surface-muted">${fmtDate(g.createdAt)}</td>
+            <td class="py-3 px-4">${g.rating ? '⭐'.repeat(g.rating) : '<span class="text-on-surface-muted">—</span>'}</td>
+            <td class="py-3 px-4">
+              <select onchange="updateStatus(${g.id}, this.value, this)"
+                class="text-xs border border-border rounded-lg px-2 py-1.5 bg-surface focus:outline-none focus:border-primary cursor-pointer">
+                <option value="">— Change Status —</option>
+                <option value="OPEN">OPEN</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="RESOLVED">RESOLVED</option>
+                <option value="ESCALATED">ESCALATED</option>
+              </select>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-4 text-center text-danger font-medium">Error: ${e.message}</td></tr>`;
+      }
+    }
+
+    // ─── Shared: Update Status ────────────────────────────────────────────────
+    async function updateStatus(id, status, selectEl) {
+      if (!status) return;
+      try {
+        const res = await fetch(`/api/grievances/${id}/status?status=${status}`, { method: 'PUT' });
+        if (!res.ok) { const d = await res.json(); throw new Error(d.message || 'Update failed'); }
+        selectEl.value = '';
+        // Refresh current visible panel
+        const escalatedPanel = document.getElementById('panel-escalated');
+        if (!escalatedPanel.classList.contains('hidden')) loadEscalated();
+        else loadAllGrievances();
+      } catch(e) { alert('Error: ' + e.message); selectEl.value = ''; }
     }
   </script>
 </body>

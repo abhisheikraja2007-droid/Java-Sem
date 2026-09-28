@@ -1,9 +1,7 @@
 package Semester.exam.Java_Project;
 
-import Semester.exam.Java_Project.entity.Category;
-import Semester.exam.Java_Project.entity.Department;
-import Semester.exam.Java_Project.repository.CategoryRepository;
-import Semester.exam.Java_Project.repository.DepartmentRepository;
+import Semester.exam.Java_Project.entity.*;
+import Semester.exam.Java_Project.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -12,41 +10,58 @@ public class DataInitializer implements CommandLineRunner {
 
     private final DepartmentRepository departmentRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final GrievanceRepository grievanceRepository;
+    private final EscalationRepository escalationRepository;
 
-    public DataInitializer(DepartmentRepository departmentRepository, CategoryRepository categoryRepository) {
+    public DataInitializer(DepartmentRepository departmentRepository,
+                           CategoryRepository categoryRepository,
+                           UserRepository userRepository,
+                           GrievanceRepository grievanceRepository,
+                           EscalationRepository escalationRepository) {
         this.departmentRepository = departmentRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
+        this.grievanceRepository = grievanceRepository;
+        this.escalationRepository = escalationRepository;
     }
 
     @Override
     public void run(String... args) {
-        if (categoryRepository.count() <= 1) {
-            Department pwd = departmentRepository.save(createDept("Public Works Department"));
-            Department water = departmentRepository.save(createDept("Water & Hydrology Board"));
-            Department sanitation = departmentRepository.save(createDept("Sanitation & Environmental Services"));
-            Department electrical = departmentRepository.save(createDept("Municipal Grid & Energy"));
+        // --- Wipe all old test data on startup (fresh slate) ---
+        escalationRepository.deleteAll();
+        grievanceRepository.deleteAll();
 
-            if (categoryRepository.count() == 0) {
-                categoryRepository.save(createCategory("Roads & Infrastructure", 3, pwd));
-            } else {
-                Category c1 = categoryRepository.findById(1L).orElse(null);
-                if (c1 != null) {
-                    c1.setName("Roads & Infrastructure");
-                    c1.setSlaDays(3);
-                    c1.setDepartment(pwd);
-                    categoryRepository.save(c1);
-                }
-            }
+        // --- Seed Users (if not exist) ---
+        if (!userRepository.existsByUsername("citizen")) {
+            User citizen = new User();
+            citizen.setUsername("citizen");
+            citizen.setPassword("citizen123");
+            citizen.setFullName("Ravi Kumar");
+            citizen.setRole(Role.CITIZEN);
+            userRepository.save(citizen);
+        }
 
-            if (!categoryRepository.existsById(2L)) {
-                categoryRepository.save(createCategory("Water Supply & Sewage", 2, water));
-            }
-            if (!categoryRepository.existsById(3L)) {
-                categoryRepository.save(createCategory("Garbage & Solid Waste", 1, sanitation));
-            }
-            if (!categoryRepository.existsById(4L)) {
-                categoryRepository.save(createCategory("Streetlights & Electrical", 2, electrical));
-            }
+        if (!userRepository.existsByUsername("senior")) {
+            User senior = new User();
+            senior.setUsername("senior");
+            senior.setPassword("senior123");
+            senior.setFullName("Senior Officer Priya");
+            senior.setRole(Role.SENIOR_OFFICER);
+            userRepository.save(senior);
+        }
+
+        // --- Seed Departments + Categories (only if empty) ---
+        if (categoryRepository.count() == 0) {
+            Department pwd      = departmentRepository.save(createDept("Public Works Department"));
+            Department water    = departmentRepository.save(createDept("Water & Hydrology Board"));
+            Department sanit    = departmentRepository.save(createDept("Sanitation & Environmental Services"));
+            Department electric = departmentRepository.save(createDept("Municipal Grid & Energy"));
+
+            categoryRepository.save(createCategory("Roads & Infrastructure",    3, pwd));
+            categoryRepository.save(createCategory("Water Supply & Sewage",     2, water));
+            categoryRepository.save(createCategory("Garbage & Solid Waste",     1, sanit));
+            categoryRepository.save(createCategory("Streetlights & Electrical", 2, electric));
         }
     }
 

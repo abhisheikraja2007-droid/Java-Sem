@@ -12,12 +12,15 @@ import java.util.List;
 @Repository
 public interface GrievanceRepository extends JpaRepository<Grievance, Long> {
 
-    // Custom query 1: Find by status (using the Enum we created in Phase 2)
     List<Grievance> findByStatus(GrievanceStatus status);
 
-    // Custom query 2: CHANGED to return a Page instead of a List for pagination
     Page<Grievance> findByCategoryDepartmentId(Long departmentId, Pageable pageable);
 
     List<Grievance> findByStatusIn(List<GrievanceStatus> statuses);
 
-}
+    // "My Complaints" — returns only grievances filed by this citizen
+    Page<Grievance> findByCitizenUsername(String username, Pageable pageable);
+
+    // Senior Officer: fetch all escalated grievances
+    Page<Grievance> findByStatus(GrievanceStatus status, Pageable pageable);
+}

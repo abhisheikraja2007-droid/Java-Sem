@@ -31,8 +31,11 @@ public class Grievance {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @ManyToOne
+    @JoinColumn(name = "citizen_id")
+    private User citizen;
+
     @OneToMany(mappedBy = "grievance", cascade = CascadeType.ALL)
     private List<Escalation> escalations;
-
 
 }

@@ -19,6 +19,10 @@ public class GrievanceRequestDTO {
     @Size(min = 3, max = 500, message = "Location must be between 3 and 500 characters")
     private String location;
 
+    // Username of the logged-in citizen filing the grievance
+    @NotBlank(message = "citizenUsername is required")
+    private String citizenUsername;
+
     // Getters and Setters
     public Long getCategoryId() { return categoryId; }
     public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
@@ -26,4 +30,7 @@ public class GrievanceRequestDTO {
     public void setDescription(String description) { this.description = description; }
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
-}
+    public String getCitizenUsername() { return citizenUsername; }
+    public void setCitizenUsername(String citizenUsername) { this.citizenUsername = citizenUsername; }
+}
+
