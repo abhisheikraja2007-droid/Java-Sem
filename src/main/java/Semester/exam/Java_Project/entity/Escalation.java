@@ -21,6 +21,7 @@ public class Escalation {
 
     @ManyToOne
     @JoinColumn(name = "grievance_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Grievance grievance;
 
 }
