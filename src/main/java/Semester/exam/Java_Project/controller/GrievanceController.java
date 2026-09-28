@@ -1,0 +1,59 @@
+package Semester.exam.Java_Project.controller;
+
+import Semester.exam.Java_Project.dto.GrievanceRequestDTO;
+import Semester.exam.Java_Project.entity.Grievance;
+import Semester.exam.Java_Project.entity.GrievanceStatus;
+import Semester.exam.Java_Project.service.GrievanceService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/grievances")
+public class GrievanceController {
+
+    private final GrievanceService grievanceService;
+
+    // Constructor Injection: Spring automatically provides the Service layer here
+    public GrievanceController(GrievanceService grievanceService) {
+        this.grievanceService = grievanceService;
+    }
+
+    // 1. Submit a new grievance using a JSON Request Body and Validation
+    // POST http://localhost:8080/api/grievances/
+    // JSON Body: { "categoryId": 1, "description": "Pothole on Main St" }
+    @PostMapping
+    public ResponseEntity<Grievance> submitGrievance(@Valid @RequestBody GrievanceRequestDTO request) {
+        Grievance createdGrievance = grievanceService.createGrievance(
+                request.getCategoryId(),
+                request.getDescription()
+        );
+        return ResponseEntity.ok(createdGrievance);
+    }
+
+    // 2. Department updates the status
+    // PUT http://localhost:8080/api/grievances/1/status?status=IN_PROGRESS
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Grievance> updateStatus(@PathVariable Long id, @RequestParam GrievanceStatus status) {
+        Grievance updatedGrievance = grievanceService.updateStatus(id, status);
+        return ResponseEntity.ok(updatedGrievance);
+    }
+
+    // 3. Citizen submits a rating for a resolved grievance
+    // POST http://localhost:8080/api/grievances/1/rate?rating=5
+    @PostMapping("/{id}/rate")
+    public ResponseEntity<Grievance> rateGrievance(@PathVariable Long id, @RequestParam int rating) {
+        Grievance ratedGrievance = grievanceService.submitRating(id, rating);
+        return ResponseEntity.ok(ratedGrievance);
+    }
+
+    // 4. Fetch all grievances for a specific department
+    // GET http://localhost:8080/api/grievances/department/1
+    @GetMapping("/department/{departmentId}")
+    public ResponseEntity<List<Grievance>> getByDepartment(@PathVariable Long departmentId) {
+        List<Grievance> grievances = grievanceService.getGrievancesByDepartment(departmentId);
+        return ResponseEntity.ok(grievances);
+    }
+}
