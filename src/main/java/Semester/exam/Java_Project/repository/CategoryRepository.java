@@ -5,8 +5,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
-@Repository
+/**
+ * Spring Data JPA Repository for Category entity.
+ * JpaRepository provides out-of-the-box CRUD operations (save, findById, findAll, deleteById, count).
+ */
+@Repository // Marks this interface as a Spring Data repository bean
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    // Custom query: Find all categories under a specific department
+
+    /**
+     * Derived Query Method: Spring Data inspects the method name and generates:
+     * SELECT * FROM category WHERE department_id = ?
+     * 
+     * @param departmentId ID of the parent department
+     * @return List of categories belonging to that department
+     */
     List<Category> findByDepartmentId(Long departmentId);
 }

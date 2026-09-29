@@ -22,8 +22,7 @@ public class GrievanceController {
         this.grievanceService = grievanceService;
     }
 
-    // 1. Submit a new grievance (citizen must be logged in — sends citizenUsername)
-    // POST /api/grievances
+    // Citizen files a new complaint
     @PostMapping
     public ResponseEntity<Grievance> submitGrievance(@Valid @RequestBody GrievanceRequestDTO request) {
         Grievance created = grievanceService.createGrievance(
@@ -35,32 +34,28 @@ public class GrievanceController {
         return ResponseEntity.ok(created);
     }
 
-    // 2. Update status (department / senior officer action)
-    // PUT /api/grievances/{id}/status?status=IN_PROGRESS
+    // Department officer moves complaint status (e.g. IN_PROGRESS or RESOLVED)
     @PutMapping("/{id}/status")
     public ResponseEntity<Grievance> updateStatus(@PathVariable Long id, @RequestParam GrievanceStatus status) {
         return ResponseEntity.ok(grievanceService.updateStatus(id, status));
     }
 
-    // 3. Rate a resolved grievance
-    // POST /api/grievances/{id}/rate?rating=5
+    // Citizen rates a resolved complaint (1 to 5)
     @PostMapping("/{id}/rate")
     public ResponseEntity<Grievance> rateGrievance(@PathVariable Long id, @RequestParam int rating) {
         return ResponseEntity.ok(grievanceService.submitRating(id, rating));
     }
 
-    // 4. Get grievances for a specific department
-    // GET /api/grievances/department/{departmentId}
+    // Department view: all complaints under this department
     @GetMapping("/department/{departmentId}")
     public ResponseEntity<Page<Grievance>> getByDepartment(@PathVariable Long departmentId, Pageable pageable) {
         return ResponseEntity.ok(grievanceService.getGrievancesByDepartment(departmentId, pageable));
     }
 
-    // 5. Get ALL grievances (paginated) — used by senior officer dashboard
-    // Allowed fields for sorting to prevent PropertyReferenceException
+    // Allowed sorting fields to prevent invalid property lookup errors
     private static final java.util.Set<String> ALLOWED_SORTS = java.util.Set.of("id", "createdAt", "status", "rating", "description", "location");
 
-    // GET /api/grievances
+    // All complaints (paginated and sorted)
     @GetMapping
     public Page<Grievance> getAllGrievances(
             @RequestParam(defaultValue = "0") int page,
@@ -73,8 +68,7 @@ public class GrievanceController {
         return grievanceService.getAllGrievances(pageable);
     }
 
-    // 6. "My Complaints" — citizen sees only their own grievances
-    // GET /api/grievances/my?username=citizen
+    // Citizen's personal complaints view
     @GetMapping("/my")
     public ResponseEntity<Page<Grievance>> getMyGrievances(
             @RequestParam String username,
@@ -86,8 +80,7 @@ public class GrievanceController {
         return ResponseEntity.ok(grievanceService.getMyGrievances(username, pageable));
     }
 
-    // 7. Escalated grievances — for senior officer oversight panel
-    // GET /api/grievances/escalated
+    // Escalated complaints for senior officer review
     @GetMapping("/escalated")
     public ResponseEntity<Page<Grievance>> getEscalated(
             @RequestParam(defaultValue = "0") int page,
@@ -98,14 +91,13 @@ public class GrievanceController {
         return ResponseEntity.ok(grievanceService.getEscalatedGrievances(pageable));
     }
 
-    // 8. Get single grievance by ID
-    // GET /api/grievances/{id}
+    // Single complaint by ID
     @GetMapping("/{id}")
     public ResponseEntity<Grievance> getById(@PathVariable Long id) {
         return ResponseEntity.ok(grievanceService.getGrievanceById(id));
     }
 
-    // 9. Test: manually trigger SLA engine
+    // Manual test trigger for the SLA escalation job
     @PostMapping("/test/trigger-sla")
     public ResponseEntity<String> testSlaEngine() {
         grievanceService.escalateOverdueGrievances();

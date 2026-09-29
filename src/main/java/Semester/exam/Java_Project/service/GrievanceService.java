@@ -29,8 +29,10 @@ public class GrievanceService {
     private final UserRepository userRepo;
     private final ApplicationEventPublisher eventPublisher;
 
-    public GrievanceService(GrievanceRepository grievanceRepo, CategoryRepository categoryRepo,
-                            EscalationRepository escalationRepo, UserRepository userRepo,
+    public GrievanceService(GrievanceRepository grievanceRepo, 
+                            CategoryRepository categoryRepo,
+                            EscalationRepository escalationRepo, 
+                            UserRepository userRepo,
                             ApplicationEventPublisher eventPublisher) {
         this.grievanceRepo = grievanceRepo;
         this.categoryRepo = categoryRepo;
@@ -39,7 +41,7 @@ public class GrievanceService {
         this.eventPublisher = eventPublisher;
     }
 
-    // --- RULE 1: Create Grievance linked to citizen ---
+    // Citizen creates a complaint; category determines which department handles it
     public Grievance createGrievance(Long categoryId, String description, String location, String citizenUsername) {
         if (description == null || description.trim().isEmpty()) {
             throw new IllegalArgumentException("Description cannot be empty");
@@ -67,34 +69,33 @@ public class GrievanceService {
         return grievanceRepo.save(newGrievance);
     }
 
-    // --- SLA Auto-Escalation (runs midnight daily) ---
+    // Runs every night at midnight to check for overdue complaints
     @Scheduled(cron = "0 0 0 * * ?")
     public void escalateOverdueGrievances() {
         List<Grievance> activeGrievances = grievanceRepo.findByStatusIn(
                 List.of(GrievanceStatus.OPEN, GrievanceStatus.IN_PROGRESS)
         );
         LocalDateTime now = LocalDateTime.now();
+
         for (Grievance grievance : activeGrievances) {
-            // Edge Case 1: Null check on createdAt or category to prevent NullPointerException
+            // Skip invalid rows without dates or categories
             if (grievance.getCreatedAt() == null || grievance.getCategory() == null) {
                 log.warn("Skipping grievance ID {} due to null createdAt or category", grievance.getId());
                 continue;
             }
 
-            // Edge Case 2: Guard against invalid or zero/negative SLA limit
             int slaLimit = Math.max(1, grievance.getCategory().getSlaDays());
             LocalDateTime deadline = grievance.getCreatedAt().plusDays(slaLimit);
 
-            // Edge Case 3: Precise boundary check (now.isAfter(deadline))
-            // Prevents ChronoUnit.DAYS truncation where 1-day SLA required 48+ hours to trigger
+            // Escalate if past the SLA deadline
             if (now.isAfter(deadline)) {
-                // Edge Case 4: Prevent duplicate escalation record for Senior Officer
                 boolean alreadyEscalated = escalationRepo.findByGrievanceId(grievance.getId()).stream()
                         .anyMatch(e -> "Senior Officer".equalsIgnoreCase(e.getEscalatedTo()));
 
                 grievance.setStatus(GrievanceStatus.ESCALATED);
                 grievanceRepo.save(grievance);
 
+                // Avoid duplicate escalation records for the same grievance
                 if (!alreadyEscalated) {
                     long daysOverdue = ChronoUnit.DAYS.between(deadline, now);
                     long hoursOverdue = ChronoUnit.HOURS.between(deadline, now);
@@ -109,26 +110,29 @@ public class GrievanceService {
                     escalationRepo.save(escalation);
 
                     log.warn("Escalated Grievance ID: {} (overdue by {})", grievance.getId(), overdueDesc);
+
+                    // Fire internal event (can trigger email/SMS alerts)
                     eventPublisher.publishEvent(new GrievanceEscalatedEvent(this, grievance));
                 }
             }
         }
     }
 
-    // --- RULE 3: Update Status ---
+    // Update complaint status (e.g. OPEN -> IN_PROGRESS -> RESOLVED)
     public Grievance updateStatus(Long grievanceId, GrievanceStatus newStatus) {
         if (newStatus == null) {
             throw new IllegalArgumentException("New status cannot be null");
         }
         Grievance grievance = grievanceRepo.findById(grievanceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Grievance not found"));
+
         grievance.setStatus(newStatus);
         grievanceRepo.save(grievance);
         log.info("NOTIFICATION: Grievance ID {} status updated to {}", grievance.getId(), newStatus);
         return grievance;
     }
 
-    // --- RULE 4: Submit Rating (only when RESOLVED) ---
+    // Citizens can only rate complaints that have been marked RESOLVED
     public Grievance submitRating(Long grievanceId, int rating) {
         if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException(
@@ -136,36 +140,39 @@ public class GrievanceService {
         }
         Grievance grievance = grievanceRepo.findById(grievanceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Grievance not found with ID: " + grievanceId));
+
         if (grievance.getStatus() != GrievanceStatus.RESOLVED) {
             throw new IllegalStateException(
                 "Cannot rate grievance ID " + grievanceId + " because it is not yet RESOLVED. " +
                 "Current status: " + grievance.getStatus());
         }
+
         grievance.setRating(rating);
         return grievanceRepo.save(grievance);
     }
 
-    // --- RULE 5: Fetch by Department ---
+    // Complaints assigned to a department
     public Page<Grievance> getGrievancesByDepartment(Long departmentId, Pageable pageable) {
         return grievanceRepo.findByCategoryDepartmentId(departmentId, pageable);
     }
 
-    // --- My Complaints: Citizen sees only their own grievances ---
+    // Complaints filed by a specific citizen
     public Page<Grievance> getMyGrievances(String username, Pageable pageable) {
         return grievanceRepo.findByCitizenUsername(username, pageable);
     }
 
-    // --- Senior Officer: see all escalated grievances ---
+    // Complaints that breached SLA for senior officer dashboard
     public Page<Grievance> getEscalatedGrievances(Pageable pageable) {
         return grievanceRepo.findByStatus(GrievanceStatus.ESCALATED, pageable);
     }
 
-    // --- Get single grievance by ID ---
+    // Single complaint lookup
     public Grievance getGrievanceById(Long id) {
         return grievanceRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Grievance not found with ID: " + id));
     }
 
+    // All complaints with pagination
     public Page<Grievance> getAllGrievances(Pageable pageable) {
         return grievanceRepo.findAll(pageable);
     }

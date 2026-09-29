@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
 
+// Municipal department responsible for handling categories of complaints
 @Data
 @Entity
+@Table(name = "department")
 public class Department {
     
     @Id
@@ -14,9 +16,9 @@ public class Department {
     
     private String name;
 
+    // One department has many categories; JsonIgnore prevents infinite recursion in JSON
     @OneToMany(mappedBy = "department")
     @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Category> categories;
-
 
 }

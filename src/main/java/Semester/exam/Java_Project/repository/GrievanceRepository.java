@@ -14,13 +14,15 @@ public interface GrievanceRepository extends JpaRepository<Grievance, Long> {
 
     List<Grievance> findByStatus(GrievanceStatus status);
 
+    // Spring Data navigates Grievance -> Category -> Department to filter by dept ID
     Page<Grievance> findByCategoryDepartmentId(Long departmentId, Pageable pageable);
 
+    // Used by the SLA engine to check both OPEN and IN_PROGRESS complaints
     List<Grievance> findByStatusIn(List<GrievanceStatus> statuses);
 
-    // "My Complaints" — returns only grievances filed by this citizen
+    // "My Complaints" list for the logged-in citizen
     Page<Grievance> findByCitizenUsername(String username, Pageable pageable);
 
-    // Senior Officer: fetch all escalated grievances
+    // Filter grievances by status with pagination
     Page<Grievance> findByStatus(GrievanceStatus status, Pageable pageable);
-}
+}

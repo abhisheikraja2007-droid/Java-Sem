@@ -5,6 +5,7 @@ import Semester.exam.Java_Project.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+// Populates initial demo data on application startup if tables are empty
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -28,7 +29,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Seed Users (if not exist)
+        // Seed default test accounts
         if (!userRepository.existsByUsername("citizen")) {
             User citizen = new User();
             citizen.setUsername("citizen");
@@ -47,7 +48,7 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(senior);
         }
 
-        // --- Seed Departments + Categories (only if empty) ---
+        // Seed departments and complaint categories with SLA days
         if (categoryRepository.count() == 0) {
             Department pwd      = departmentRepository.save(createDept("Public Works Department"));
             Department water    = departmentRepository.save(createDept("Water & Hydrology Board"));
